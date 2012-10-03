@@ -1,0 +1,139 @@
+<div class="page-create-order">
+    <script type="text/javascript">order.setCurrencySymbol('<?php echo $this->getCurrencySymbol($this->getCurrentCurrencyCode()) ?>')</script>
+    <table cellspacing="0" width="100%">
+        <tr>
+            <td>
+                <div id="order-search" style="display:none" class="order-search-items"><?php echo $this->getChildHtml('search') ?></div>
+                <div id="order-items"><?php echo $this->getChildHtml('items') ?></div>
+                <div id="order-info" style="display:none">
+                    <div class="box-left">
+                        <div id="order-form_account" class="br">
+                            <?php echo $this->getChildHtml('form_account') ?>
+                        </div>
+                        <div id="order-form_coupon" class="br"><?php echo $this->getChildHtml('coupons') ?></div>
+                    </div>
+                    <div class="box-right">
+                        <div class="box-left">
+                            <div id="order-methods">
+                                <div id="order-billing_method" class="payments br">
+                                    <?php if ($this->getChild('card_validation')): ?>
+                                        <div class="clear"></div>
+                                        <div id="order-methods">
+                                            <div id="order-card_validation" class="box-left payments"><?php echo $this->getChildHtml('card_validation') ?></div>
+                                        </div>
+                                    <?php endif; ?> 
+                                    <?php echo $this->getChildHtml('billing_method') ?>
+                                </div>
+                                <div id="order-shipping_method" style="display:none"><?php echo $this->getChildHtml('shipping_method') ?></div>
+                            </div>
+                            <div class="entry-edit">
+                                <div class="entry-edit-head">
+                                    <h4 class="icon-head"><?php echo Mage::helper('sales')->__('Comments') ?></h4>
+                                </div>
+                                <textarea name="order[comment][customer_note]" id="order-comment" style="width:98%; height:5em;"></textarea>
+                            </div>
+                        </div>
+                        <div class="box-right entry-edit">
+                            <div class="entry-edit-head"><h4><?php echo Mage::helper('sales')->__('Order Totals') ?></h4></div>
+                            <div id="order-totals"><?php echo $this->getChildHtml('totals') ?></div>
+                        </div>                        
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>         
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+    var orderListLoaded = false;
+    function showOrderList() {    
+        if(!orderListLoaded) {
+            order.loadArea(['order_grid'],true);    
+            orderListLoaded = true;
+        }
+        $('order-order_grid').toggle();
+    }
+    order.selectOrder = function(grid, event){
+        var element = Event.findElement(event, 'tr');
+        if (element.title){
+            setLocation(element.title);
+        }
+    };
+
+    //]]>
+</script>
+<div class="manage-actions-bar">
+    <ul>
+        <li><button onclick="order.save('<?php echo $this->getUrl("*/*/save"); ?>','<?php echo $this->__("Are you sure to save this order and move to new order screen?") ?>')" class="scalable save" type="button"><span><?php echo $this->__("Save <br />Order"); ?></span></button></li>
+        <?php if ($this->getRequest()->getParam('order_id')): ?>
+            <script>
+                function cancelOrder(){
+                    if (isOnline()){
+                        order.cancel('<?php echo $this->getUrl('*/*/cancel', array('order_id' => $this->getRequest()->getParam('order_id'))) ?>','<?php echo $this->__("Are you sure to cancel this order?") ?>');
+                    }else{
+                        if (confirm('<?php echo $this->__("Are you sure to cancel this order?") ?>')){
+                            clearOrder();
+                        }
+                    }
+                }
+                    
+            </script>
+        <?php else: ?>
+            <script>
+                function cancelOrder(){
+                    if (isOnline()){
+                        order.cancel('<?php echo $this->getUrl('*/*/clear') ?>','<?php echo $this->__("Are you sure to cancel this order?") ?>');
+                    }else{
+                        if (confirm('<?php echo $this->__("Are you sure to cancel this order?") ?>')){
+                            clearOrder();
+                        }
+                    }
+                }
+                
+            </script>            
+        <?php endif; ?>
+        <li><button onclick="cancelOrder();" class="scalable b-cancel" type="button"><span><?php echo $this->__("Cancel <br />Order"); ?></span></button></a></li>                    
+        <li><button onclick="showOrderList();" class="scalable order-list" type="button"><?php echo $this->__("Order <br />List"); ?></button>
+            <div id="order-order_grid" style="display:none"></div>
+        </li>
+        <li><button class="scalable check-stock inactive" type="button"><?php echo $this->__("Check <br />Stock"); ?></button></li>
+        <li><button class="scalable b-shipping inactive" type="button"><?php echo $this->__("Shipping"); ?></button></li>
+        <li id="calculator">
+            <button onclick="$('calculator').select('table').first().toggle();" class="scalable calculator" type="button"><?php echo $this->__("Calculator"); ?></button>
+            <table style="display:none">
+                <tr><td colspan="4" class="calc-input"><input class="al" type="text" name="calc_total" id="calc_total" value="" /></td></tr>
+                <tr>
+                    <td><div onclick="$('calc_total').value += '7'">7</div></td>
+                    <td><div onclick="$('calc_total').value += '8'">8</div></td>
+                    <td><div onclick="$('calc_total').value += '9'">9</div></td>
+                    <td><div onclick="$('calc_total').value += '/'">/</div></td>
+                </tr>
+                <tr>
+                    <td><div onclick="$('calc_total').value += '4'">4</div></td>
+                    <td><div onclick="$('calc_total').value += '5'">5</div></td>
+                    <td><div onclick="$('calc_total').value += '6'">6</div></td>
+                    <td><div onclick="$('calc_total').value += '*'">*</div></td>
+                </tr>
+                <tr>
+                    <td><div onclick="$('calc_total').value += '1'">1</div></td>
+                    <td><div onclick="$('calc_total').value += '2'">2</div></td>
+                    <td><div onclick="$('calc_total').value += '3'">3</div></td>
+                    <td><div onclick="$('calc_total').value += '-'">-</div></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center"><div onclick="$('calc_total').value += '0'">0</div></td>
+                    <td><div onclick="$('calc_total').value += '.'">.</div></td>
+                    <td><div onclick="$('calc_total').value += '+'">+</div></td>
+                </tr>
+                <tr>
+                    <td><div onclick="$('calc_total').value = ''">C</div></td>
+                    <td>&nbsp;</td>
+                    <td colspan="2"><div onclick="if($('calc_total').value !='') $('calc_total').value = eval($('calc_total').value)">=</div></td>
+                </tr>
+            </table>
+        </li>
+    </ul>
+</div>
+<?php echo $this->getChildHtml('order_item_extra_info') ?>

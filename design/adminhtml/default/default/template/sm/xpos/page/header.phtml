@@ -1,0 +1,621 @@
+<script src="http://html5demos.com/js/h5utils.js"></script>
+<script>
+    addEvent(window, 'online', checkNetwork);
+    addEvent(window, 'offline', checkNetwork);
+
+    window.applicationCache.addEventListener("error", function(e) {
+        alert("Error fetching manifest: a good chance we are offline");
+    });
+    var networkCheck = false;
+    function checkNetwork(){
+        // if another request is active, skip this
+        if (networkCheck)
+            return;
+        networkCheck = jQuery.ajax({
+            type: 'GET',
+            url: '<?php echo $this->getUrl('adminhtml/xPos/checkNetwork') ?>',
+            timeout: 5000,
+            success: function(data) {
+                if (jQuery('input#network-availability').val()!='online')
+                    alert('Your network connection is now connected! Please check if your current order is checked out successfully before switching to online mode.');
+                    
+                jQuery('input#network-availability').val('online'); 
+                networkCheck = false;                
+                //                if (!isOnline())
+                //                        goOnline();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                if (isOnline()){
+                    // failed to request in online mode, trying to request 1 more time before turning to offline
+                    jQuery.ajax({
+                        type: 'GET',
+                        url: '<?php echo $this->getUrl('adminhtml/xPos/checkNetwork') ?>',
+                        timeout: 5000,
+                        success: function(data) {
+                            if (jQuery('input#network-availability').val()!='online')
+                                alert('Your network connection is now connected! Please checking out your current order if has before switching to online mode.');
+                    
+                            jQuery('input#network-availability').val('online'); 
+                            //                if (!isOnline())
+                            //                        goOnline();
+                            networkCheck = false;
+                            
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            jQuery('input#network-availability').val('offline');                  
+                            if (isOnline())
+                                goOffline();
+                            networkCheck = false;                            
+                        }
+                    });                 
+
+                }else{
+                    //still offline
+                }
+            }
+        });        
+      
+        
+    }
+    function goOnline(){
+        if (isOnlineAvail()){
+            networkCheck = false;
+            //            jQuery.ajax({
+            //                url: '<?php echo $this->getUrl('adminhtml/xPos/cancel') ?>',
+            //                success: function(){              
+            jQuery('input#network-status').val('online');  
+            jQuery('#network-offline').hide();        
+            jQuery('#network-online').fadeIn('slow');
+            jQuery('#defaultCountdown').countdown('resume');
+            jQuery('#storeProd').removeAttr("disabled");  
+            // switch prod & cust search
+            jQuery('#global_search').show();
+            jQuery('#productSearch').hide();
+            jQuery('#customer_search').show();
+            jQuery('#customer_search_offline').hide();  
+            //enable coupon
+            jQuery('#order-form_coupon').show(); 
+            //enable buttons
+            jQuery('button.order-list').removeAttr("disabled");  
+            jQuery('button.order-list').removeClass('inactive');            
+            jQuery('button.save').removeAttr("disabled");  
+            jQuery('button.save').removeClass('inactive'); 
+            var check = (selectedProduct.length!=0);     
+                       
+            if (check){
+                xUpdate();          
+            }else{
+                xUpdate();
+                // no item in cart
+                //                var area = ['sidebar', 'items', 'shipping_method', 'billing_method','totals', 'giftmessage'];
+                //                // prepare additional fields
+                //                var fieldsPrepare = {update_items: 1};
+                //                var info = $('order-items_grid').select('input', 'select', 'textarea');
+                //                for(var i=0; i<info.length; i++){
+                //                    if(!info[i].disabled && (info[i].type != 'checkbox' || info[i].checked)) {
+                //                        fieldsPrepare[info[i].name] = info[i].getValue();
+                //                    }
+                //                }
+                //                fieldsPrepare = Object.extend(fieldsPrepare, this.productConfigureAddFields);
+                //
+                //                // prepare loading areas and build url
+                //                area = order.prepareArea(area);
+                //                this.loadingAreas = area;
+                //                var url = this.loadBaseUrl + 'block/' + area + '?isAjax=true';
+                //
+                //                // prepare additional fields
+                //                fieldsPrepare = order.prepareParams(fieldsPrepare);
+                //                //fieldsPrepare.reset_shipping = 1; -- Disable Reset Shipping
+                //                fieldsPrepare.json = 1;
+                //
+                //                // create fields
+                //                var fields = [];
+                //                for (var name in fieldsPrepare) {
+                //                    fields.push(new Element('input', {
+                //                        type: 'hidden', 
+                //                        name: name, 
+                //                        value: fieldsPrepare[name]
+                //                    }));
+                //                }
+                //                if (typeof productConfigure != 'undefined'){
+                //
+                //                    productConfigure.addFields(fields);
+                //
+                //                    // prepare and do submit
+                //                    productConfigure.addListType(listType, {
+                //                        urlSubmit: url
+                //                    });
+                //                    productConfigure.setOnLoadIFrameCallback(listType, function(response){
+                //                        this.loadAreaResponseHandler(response);
+                //                        jQuery('#loading-mask').fadeIn();
+                //                        jQuery.ajax({
+                //                            url: '<?php echo $this->getUrl('adminhtml/xPos/clearcart') ?>',
+                //                            success: function(){ 
+                //                                //                        jQuery.ajax({
+                //                                //                            url: '<?php echo $this->getUrl('adminhtml/xPos/index') ?>',
+                //                                //                            success: function(){                           
+                //                                clearOrder();
+                //                                //                            }
+                //                                //                        });
+                //                
+                //                            }
+                //                        });
+                //                    }.bind(this));
+                //                    productConfigure.submit(listType);
+                //                    // clean
+                //                    this.productConfigureAddFields = {};
+                //                }
+
+                this.orderItemChanged = false;
+
+            }
+                    
+
+        }else{
+            alert("Cannot switch to online mode. Please check your connection.");
+        }
+    }
+    function goOffline(){
+        // hide loading in case user was working on something
+        jQuery('#loading-mask').hide();
+        
+        jQuery('input#network-status').val('offline');    
+        jQuery('#network-online').hide();        
+        jQuery('#network-offline').fadeIn('slow');    
+        jQuery('#defaultCountdown').countdown('pause');
+        jQuery('#storeProd').attr("disabled", "disabled");
+        // switch prod & cust search        
+        jQuery('#global_search').hide();
+        jQuery('#productSearch').show(); 
+        jQuery('#customer_search').hide();
+        jQuery('#customer_search_offline').show();
+        console.log('aa');
+        //disable coupon
+        jQuery('#order-form_coupon').hide();
+        //disable buttons
+        jQuery('button.order-list').attr("disabled", "");  
+        jQuery('button.order-list').addClass('inactive');
+        jQuery('button.save').attr("disabled", "");  
+        jQuery('button.save').addClass('inactive');        
+        
+    } 
+    function isOnline(){
+        return jQuery('input#network-status').val()=='online';
+    }
+    function isOnlineAvail(){
+        return jQuery('input#network-availability').val()=='online';        
+    }
+
+    function setExpiry(){
+        var exp = 1000*600;
+        $.jStorage.setTTL("products", exp); // expires in 60s
+        $.jStorage.setTTL("customers", exp); // expires in 60s
+        $.jStorage.setTTL("reponse", exp); // expires in 60s
+    }
+    jQuery(document).ready(function(){
+<?php if (Mage::getStoreConfig('xpos/advanced/offline_mode')): ?>            
+            window.name = 0;
+            setTimeout("setInterval(function() { checkNetwork(); } , 1000 * <?php echo Mage::getStoreConfig('xpos/advanced/network_check_interval') ?>)", 10000);
+            storeProd();  
+            storeCust();
+            jQuery('div#order-info').show();
+            jQuery('.network-status > li').click(function(){
+                if (isOnline())
+                    goOffline();
+                else
+                    goOnline();
+            });
+            //check for pending orders
+            var orders = $.jStorage.get("orders");        
+            if (orders && orders.length>0){
+                jQuery('#submitOffline').html(orders.length+' pending orders');
+                jQuery('#submitOffline').show();  
+            }    
+            
+            // add management board
+            jQuery( "#accordion" ).accordion({
+                collapsible: true,
+                active: false,
+                autoHeight: false
+            });
+            jQuery( "#management-board" ).hover(function(){
+                jQuery( "#management-board" ).fadeTo("slow",1);
+            },function(){
+                jQuery( "#management-board" ).fadeTo("slow",0.6);
+            });            
+<?php else: ?>        
+            jQuery('.wrapper').show();
+            jQuery( "#management-board").hide();
+<?php endif; ?>           
+    });
+ 
+</script>
+<script>
+    function parseOrderInfo(json){
+        var result = "";
+        
+        // process items
+        delete json['form_key'];
+        delete json['entity_id'];
+        delete json['limit'];
+        delete json['page'];
+        delete json['name'];
+        delete json['sku'];
+        delete json['price[from]'];
+        delete json['price[to]'];
+        delete json['order[send_confirmation]'];  
+        delete json['calc_total'];          
+        delete json['in_products'];          
+        delete json['order[account][group_id]'];  
+        delete json['order[shipping_method]'];       
+        delete json['coupon_code'];               
+        delete json['ccsave-swiper-data'];                       
+        delete json['balance'];                               
+        // new cust
+        delete json['order[billing_address][firstname_temp]'];                               
+        delete json['order[billing_address][lastname_temp]'];                                       
+        
+        
+        
+        
+        if (json.shipping_same_as_billing == "on"){
+            delete json['order[shipping_address][firstname]'];
+            delete json['order[shipping_address][lastname]'];
+            delete json['order[shipping_address][street][0]'];  
+            delete json['order[shipping_address][city]'];          
+            delete json['order[shipping_address][country_id]'];          
+            delete json['order[shipping_address][region]'];             
+            delete json['order[shipping_address][postcode]'];  
+            delete json['order[shipping_address][telephone]'];              
+        }
+        
+        
+        //        if (json.order[account][type] == "guest"){
+        //            result += "Customer type: Guest";
+        //        }
+        //        if (json.order[account][type] == "exist"){
+        //            result += "Customer type: Guest";
+        //        }        
+        
+        return '<table><tr><td>'+JSON.stringify(json).substring(2)
+        .replace(/item\[/g,'Product (id:')
+        .replace(/]\[qty]/g,') Qty')
+        .replace('order[account][type]','Account type')       
+        .replace('order[customer_id]','Customer Id')               
+        .replace('order[account][email]','Customer Email')        
+        // new customer
+        .replace('order[billing_address][firstname]','First Name')
+        .replace('order[billing_address][lastname]','Last Name')
+        .replace('order[account][email_temp]','Email')
+        .replace('order[billing_address][telephone]','Phone')
+
+        .replace('shipping_same_as_billing','Use billing as shipping address')
+        .replace('payment[method]','Payment method')    
+        .replace('order[comment][customer_note]','Comments')            
+        .replace('cash-in','Total Paid')            
+        //        .replace('balance','Refunded')           
+        .replace(/","/g,'" /></td></tr><tr><td>')
+        .replace(/":"/g,'<td><input type="text" value="')
+        .replace(/"}/g,'') + '" /></td></tr></table>'
+         
+        
+        ;
+    }
+    function submitOffline(){
+        if (isOnline()){
+            jQuery('#loading-mask').show();
+            var orders = $.jStorage.get("orders"); 
+            if (orders.length && orders[0].length){
+                jQuery.ajax({
+                    url: '<?php echo $this->getUrl('adminhtml/xPos/index') ?>',
+                    success: function(){         
+                        jQuery.ajax({
+                            url: '<?php echo $this->getUrl('adminhtml/xPos/completeoffline') ?>',
+                            data: orders[0],
+                            dataType: 'json',
+                            type: 'POST',
+                            success: function(data) {
+
+                                if (data.status!="success" && data.msg != ''){
+                                    jQuery('#loading-mask').hide();                                    
+                                    //                                    jQuery.ajax({
+                                    //                                        url: '<?php echo $this->getUrl('adminhtml/xPos/index') ?>'
+                                    //                                    });                 
+                                    //data = JSON.stringify(data);
+                                    //orderInfo = unescape(orders[0]).replace(/&/g,'<br>');
+                                    orderInfo = '{"' + unescape(orders[0]).replace(/&/g,'","').replace(/=/g,'":"').replace(/\' /g,'"') + '"}';
+                                    orderJson = jQuery.parseJSON( orderInfo );
+                                    orderInfo = parseOrderInfo(orderJson);
+                                    if (data.msg == ''){
+                                        data.msg = 'Unknown error';
+                                    }
+                                    error = "An error has occured: <strong>'"+data.msg+"'</strong>";
+                                    jQuery( "#dialog-modal" ).html('<p>'+error+'</p><p style="font-size: 10px">Please make a copy of the order details below and re-submit the order manually if needed. <br />To process with the next order, please click on the below button to delete this order from the queue.</p><p style="background: #DDD; padding: 5px; font-size: 10px; line-height: 11px;">'+orderInfo+'</p>');
+                                    jQuery( "#dialog-modal" ).dialog({
+                                        resizable: false,
+                                        width: '500',
+                                        modal: true,
+                                        buttons: {
+                                            "Delete this order": function() {
+                                                orders.splice(0,1);
+                                                $.jStorage.set("orders",orders);
+                                                jQuery('#submitOffline').html(orders.length+' pending orders');                          
+                                                jQuery('#loading-mask').hide();
+                                                jQuery( this ).dialog( "close" );                                                
+                                            },
+                                            Cancel: function() {
+                                                jQuery( this ).dialog( "close" );
+                                            }
+                                        }                                        
+                                    });                                    
+                                }else{
+                                    orders.splice(0,1);
+                                    $.jStorage.set("orders",orders);
+                                    jQuery('#submitOffline').html(orders.length+' pending orders');                          
+                                    jQuery('#loading-mask').hide();
+                                    jQuery.ajax({
+                                        url: '<?php echo $this->getUrl('adminhtml/xPos/index') ?>'
+                                    });
+                                    window.open(data.printurl, "_blank","toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no, width=760, height=600, left=20, top=20");
+                                }
+                            }
+                        }); 
+                    }
+                }); 
+            }else{
+                jQuery('#loading-mask').hide();
+            }
+        }else{
+            alert('You are not online!');
+        }
+    }
+    function convertCustomPrice(id){
+        var val = jQuery('#item_custom_price_'+id).val();
+        if (val.indexOf('%')>-1){
+            
+            currentPrice=Number(jQuery('td#price-'+id).find('span.price').html().replace(/[^0-9\.,]+/g,"").replace(',','.'));
+            val = (100 - parseFloat(val))*0.01*currentPrice;
+            jQuery('#item_custom_price_'+id).val(Math.round(val*100)/100);
+        }
+        recollectTotal();
+    }
+</script>
+<div id="dialog-modal" title="XPOS" style="display: none;">
+    <p>123</p>
+</div>
+
+<div id="management-board" style="position: fixed; right: 0; bottom: 0; padding: 0px; z-index: 9999; opacity: 0.6">
+    <div id="accordion" >
+        <h3><a href="#" style="font-weight: bold;">Management Board</a></h3>    
+        <div style="position:relative; height: 100%; background: #DDD">
+            <ul class="network-status" style="cursor: pointer;">
+                <li class="success-msg" id="network-online" style="text-align: center; width: 160px; padding: 8px 0px;">
+                    <ul><li><strong>ONLINE mode</strong></li></ul>            
+                </li>
+                <li class="error-msg" id="network-offline" style="text-align: center; width: 160px; padding: 8px 0px; display: none;">
+                    <ul><li><span><strong>OFFLINE mode</strong></span></li></ul>
+                </li>
+            </ul>
+            <div id="pendingOrders" style="display: none; width: 100%; position: relative; border: 1px solid #CCC; background: #EEE;margin: 5px 0; padding: 5px;"></div>
+
+
+            <input type="hidden" id="network-availability" value="online" disabled=""/>    
+            <input type="hidden" id="network-status" value="online" disabled=""/>
+            <div id="defaultCountdown">&nbsp;</div>
+            <button id="storeProd" onclick="$.jStorage.flush();window.location.reload();">Manual Reload</button><br />
+            <button id="submitOffline" onclick="submitOffline();" style="display: none;"></button>
+        </div>
+    </div>
+</div>
+<div class="header-top">    
+    <div class="header-left">
+        <div class="super-wrapper">
+            <div class="super">
+<!--                <h1 class="logo"><span><?php echo $this->__("POS - Magento") ?></span></h1>-->
+                <img src="<?php echo $this->getSkinUrl('sm/xpos/logo.png') ?>" />
+                <div class="h-rightside">
+                    <ul class="links">
+                        <li><?php echo $this->__("Date: %s", $this->formatDate(null, 'short', true)) ?></li>
+                        <li><?php echo $this->__("Staff: %s", $this->escapeHtml($this->getUser()->getUsername())) ?></li>
+                        <?php if ($orderId = Mage::getSingleton('adminhtml/session_quote')->getOrderId()): ?>
+                            <li><b><?php echo $this->__("Order ID: #%s", Mage::getModel('sales/order')->load($orderId)->getIncrementId()) ?></b></li>
+                        <?php endif; ?>
+                        <li><h3><?php echo $this->__("Quote ID: %s", Mage::getSingleton('adminhtml/sales_order_create')->getQuote()->getId()); ?></h3></li>
+                    </ul>
+                    <ul class="button">
+                        <li><a href="#" class="link-superlogin"><?php echo $this->__('Supervisor Login') ?></a></li>
+                        <li><a href="<?php echo $this->getLogoutLink() ?>" class="link-logout"><?php echo $this->__('Log Out') ?></a></li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>        
+        </div>
+
+
+        <div class="global-search-wrapper">
+            <div class="global-search">
+                <fieldset>
+                    <legend><?php echo $this->__("Name/Product ID"); ?></legend>
+                    <span id="global_search_indicator" class="autocomplete-indicator" style="display: none">
+                        <img src="<?php echo $this->getSkinUrl('images/ajax-loader.gif') ?>" alt="<?php echo $this->__('Loading...') ?>" class="v-middle"/>
+                    </span>
+
+
+                    <input id="productSearch" style="display: none;" class="input-text" value="Offline Product Search" onfocus="if(this.value=='Offline Product Search')this.value=''; " onblur="if(this.value=='')this.value='Offline Product Search';" />
+
+                    <?php $defSearch = $this->__('Global Record Search') ?>
+                    <input id="global_search" name="query" type="text" class="input-text" value="<?php if (!empty($query)): ?><?php echo $query ?><?php else: ?><?php echo $defSearch ?><?php endif ?>" onfocus="if(this.value=='<?php echo $defSearch ?>')this.value=''; " onblur="if(this.value=='')this.value='<?php echo $defSearch ?>';" />
+                    <div id="global_search_autocomplete" class="autocomplete"></div>
+
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        var recentProduct = {};
+                        var selectedProduct = [];
+                        var orderTotal = 0;
+                        var priceFormat = <?php echo json_encode(Mage::app()->getLocale()->getJsPriceFormat()); ?>;
+                        new Ajax.Autocompleter(
+                        'global_search',
+                        'global_search_autocomplete',
+                        '<?php echo $this->getUrl('adminhtml/xPos/productSearch') ?>',
+                        {
+                            paramName:"query",
+                            minChars:3,
+                            indicator:"global_search_indicator",
+                            updateElement: getSelectionId,
+                            evalJSON:'force',
+                            autoSelect: true
+                        }
+                    );
+
+                        var productTemplateHTML = '<tr id="order_item_{{id}}" product_id="{{id}}">'+
+                            '<td class="first"><a class="remove"><span><strong><?php echo $this->__("Remove"); ?></strong></span></a></td>'+
+                            '<td>{{id}}</td>'+
+                            '<td>'+
+                            '<h5 class="title"><span id="order_item_{{id}}_title">{{name}}</span></h5>'+
+                            '<div><strong><?php echo $this->helper('sales')->__('SKU') ?>:</strong>{{sku}}</div>'+
+                            '</td><td class="a-center v-middle">' +
+                            '<button style="" onclick="order.showQuoteItemConfiguration({{id}})" class="scalable " type="button" id="id_6189391d87dbd6946139109a7eed0676"><span>Configura</span></button>'+
+                            '</td>'+
+                            '<td class="price">{{priceFormatted}}'+
+                            '<div class="nobr">'+
+                            '<input type="checkbox" id="item_use_custom_price_{{id}}" onclick="order.toggleCustomPrice(this, \'item_custom_price_{{id}}\', \'item_tier_block_{{id}}\');"/>'+
+                            '<label class="normal" style="font-size: 10px" for="item_use_custom_price_{{id}}"><?php echo $this->helper('sales')->__('Custom Price') ?>*</label>'+
+                            '</div>'+
+                            '<input id="item_custom_price_{{id}}" name="item[{{id}}][custom_price]" value="{{priceFormatted}}" onBlur="convertCustomPrice({{id}});" style="display:none" disabled="disabled" class="input-text item-price"/>'+
+                            '</td>'+
+                            '<td><input name="item[{{id}}][qty]" class="input-text item-qty" value="{{qty}}" maxlength="12" /></td>'+
+                            '<td>{{tax}}%</td>'+
+                            '<td class="price subtotal">{{subtotalFormatted}}</td>'+
+                            '</tr>';
+                        var productTemplatePattern = /(^|.|\r|\n)({{(\w+)}})/;
+                        var productTemplate = new Template(productTemplateHTML, productTemplatePattern); 
+
+                        function itemChange() {
+                            if(order) {
+                                order.orderItemChanged = true;
+                            }
+                        }
+    
+                        function removeProduct(id) {        
+                            $('order_item_'+id).select('.item-qty').first().setValue("0");
+                            var check = parseInt($('order_item_'+id).select('td')[1].innerHTML) == parseInt(id);
+                            
+                            if (check)
+                                $('order_item_'+id).remove();
+                            else
+                                $('order_item_'+id).hide();
+                            selectedProduct[id] = null;
+                            selectedProduct.splice(id);
+                            updateTotal();
+                            itemChange();
+                            return false;            
+                        }
+    
+                        function updateTotal() {        
+                            orderTotal = 0;
+                            for(i in selectedProduct) {                
+                                if(selectedProduct[i] && selectedProduct[i].id) {                
+                                    orderTotal = parseFloat(orderTotal) +  selectedProduct[i].subtotal;      
+                                }
+                            }
+                            $("header-totals").select('h2').first().innerHTML = formatCurrency(orderTotal,priceFormat);                            
+                                   
+                        }
+        
+                        function updateSubTotal(id) {
+                            if(selectedProduct[id]) {
+                                selectedProduct[id].qty = parseInt($('order_item_'+id).select('.item-qty').first().getValue());                            
+                                var price = parseFloat(selectedProduct[id].price);
+                                selectedProduct[id].subtotal = selectedProduct[id].qty * (price+(price*selectedProduct[id].tax/100));
+                                selectedProduct[id].subtotalFormatted = formatCurrency(selectedProduct[id].subtotal,priceFormat);
+                                $('order_item_'+id).select('.subtotal').first().update(selectedProduct[id].subtotalFormatted);            
+                            }
+                            updateTotal();
+                        }
+    
+                        function getSelectionId(li) {
+                            recentProduct = li;                            
+                            var id = parseInt($(li).readAttribute('id'));                        
+                            selectedProduct[id] = {
+                                id: li.readAttribute('id'),
+                                name: li.readAttribute('name'),
+                                qty: 1,
+                                sku: li.readAttribute('sku'),
+                                price: li.readAttribute('price'),
+                                priceFormatted: formatCurrency(li.readAttribute('price'),priceFormat),
+                                tax: li.readAttribute('tax'),
+                                subtotal:(li.readAttribute('price')+(li.readAttribute('price')*li.readAttribute('tax')/100)),
+                                subtotalFormatted: formatCurrency((li.readAttribute('price')+(li.readAttribute('price')*li.readAttribute('tax')/100)),priceFormat)
+                            };  
+                            if($('order_item_'+id)) {
+                                if($('order_item_'+id).visible()) var qty = parseInt($('order_item_'+id).select('.item-qty').first().getValue()) + 1;
+                                else var qty = 1;
+                                $('order_item_'+id).show();
+                                $('order_item_'+id).select('.item-qty').first().setValue(qty);            
+                            } else { 
+                                $('order-items_grid').select('tbody').first().insert({
+                                    bottom: productTemplate.evaluate(selectedProduct[id])
+                                });
+                                $('order_item_'+id).down('.remove').observe("click",function(event) {
+                                    removeProduct(id);                
+                                },false);
+                                $('order_item_'+id).down('.item-qty').observe("change",function(event) {
+                                    updateSubTotal(id);                
+                                },false);            
+                                decorateTable( $('order-items_grid').select('table').first());
+                                if($$(".empty-text").first()) $$(".empty-text").first().up().hide();
+                            }        
+                            updateSubTotal(id);
+                            itemChange();
+                            $("global_search").value = '';
+                            $("global_search").focus();                            
+                        }
+                        $("global_search").observe('keypress',function(event) {                            
+                            if(event.keyCode == Event.KEY_RETURN && selectedProduct && recentProduct && !$('global_search_autocomplete').visible()) {
+                                getSelectionId(recentProduct);
+                            } else {
+                                recentProduct = null;
+                            }   
+                        });                        
+                        //]]>
+                    </script>
+                </fieldset>
+            </div>
+        </div>
+        <div class="totals-wrapper">
+            <div class="totals" id="header-totals">
+                <?php echo $this->getChildHtml('totals'); ?>
+            </div>            
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function IsPopupBlocker() {
+        var oWin = window.open ("","testpopupblocker","width=100,height=50,top=5000,left=5000");
+        if (oWin==null || typeof(oWin)=="undefined") {
+            return true;
+        } else {
+            oWin.close();
+            return false;
+        }
+    }
+    if (IsPopupBlocker())
+        alert('Please disable the popup blocker in your browser to be able to print receipt.');
+        
+    
+    //<![[CDATA
+    xpos_need_confirm_close = true;      
+    Event.observe(window,'beforeunload',function(ev) {
+        if(xpos_need_confirm_close) {
+            ev.returnValue = "You have unsaved information";
+        } else {
+            xpos_need_confirm_close = true;
+        }
+  
+    });                        
+<?php if ($href = Mage::getSingleton('core/session')->getPrintUrl()): ?>
+        window.open("<?php echo $href ?>", "_blank","toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no, width=760, height=600, left=20, top=20");
+    <?php Mage::getSingleton('core/session')->setPrintUrl() ?>
+<?php endif; ?>
+    //]]>
+</script>

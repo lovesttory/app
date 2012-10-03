@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <menu>
+        <sales>
+            <children>
+                <xpos module="xpos">
+                    <title>X-POS</title>
+                    <action>adminhtml/xpos</action>
+                </xpos>
+            </children>
+        </sales>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <sales>
+                        <children>
+                            <xpos>
+                                <title>SmartOSC X-POS</title>
+                            </xpos>
+                        </children>
+                   </sales>
+               </children>
+           </admin>
+       </resources>
+    </acl>
+</config>

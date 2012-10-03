@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config>
+    <global>
+        <models>
+            <bollettinopostale>
+                <class>Mage_BollettinoPostale_Model</class>
+            </bollettinopostale>
+        </models>
+
+        <resources>
+            <bollettinopostale_setup>
+                <setup>
+                    <module>Mage_BollettinoPostale</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </bollettinopostale_setup>
+            <bollettinopostale_write>
+                <use>core_write</use>
+            </bollettinopostale_write>
+            <bollettinopostale_read>
+                <use>core_read</use>
+            </bollettinopostale_read>
+        </resources>
+    </global>
+
+    <default>
+        <payment>
+            <bollettinopostale>
+                <active>0</active>
+                <model>bollettinopostale/BollettinoPostale</model>
+                <order_status>1</order_status>
+                <title>Bollettino Postale</title>
+                <allowspecific>0</allowspecific>
+            </bollettinopostale>
+         </payment>
+    </default>
+
+    <adminhtml>       
+        <translate>
+            <modules>
+                <Mage_BollettinoPostale>
+                    <files>
+                        <default>Mage_BollettinoPostale.csv</default>
+                    </files>
+                </Mage_BollettinoPostale>
+            </modules>
+        </translate>
+    </adminhtml>
+ 
+    <frontend>       
+        <translate>
+            <modules>
+                <Mage_BollettinoPostale>
+                    <files>
+                        <default>Mage_BollettinoPostale.csv</default>
+                    </files>
+                </Mage_BollettinoPostale>
+            </modules>
+        </translate>        
+    </frontend> 
+</config>

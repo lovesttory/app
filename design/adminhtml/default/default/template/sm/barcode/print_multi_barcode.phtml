@@ -1,0 +1,153 @@
+<?php
+/**
+ * SmartOSC Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * 
+ * @category   SM
+ * @package    SM_Barcode
+ * @version    2.0
+ * @author     hoadx@smartosc.com
+ * @copyright  Copyright (c) 2010-2011 SmartOSC Co. (http://www.smartosc.com)
+ */
+?>
+<?php
+$url = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS);
+?>
+<html>
+<head>
+
+
+<?php
+if (Mage::getStoreConfig("barcode/product/bcodelayout") == "1" || Mage::getStoreConfig("barcode/product/bcodelayout") == "0" ) {
+ ?>
+
+
+<?php
+    $columns = intval(Mage::getStoreConfig("barcode/product/columns_display"));
+    $rows = intval(Mage::getStoreConfig("barcode/product/rows_display"));
+    $marginBottom = 3.2;
+    if ($rows >= 6) $marginBottom = 2.5;
+    if ($rows == 8) $marginBottom = 2;
+?>
+
+<?php
+    $maxWidth =  99 /$columns;
+    $maxHeight = 100 / $rows;
+
+    $width = 0.9*$maxWidth;
+    $height = $maxHeight;
+
+    ?>
+    <style type="text/css">
+
+        .pak {
+            float: left;
+            width: <?php echo intval(100 /$columns) - 1; ?>%;
+            height: <?php echo intval(100 / $rows) ; ?>%;
+            margin-right: 1%;
+            text-align: center;
+        }
+
+        .pokemon
+        {
+            max-height:  100%;
+            max-width: 100%;
+            height: auto;
+            width: auto;
+        }
+        .pak img.wide {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+        }
+        .pak img.tall {
+            max-height: 100%;
+            max-width: 100%;
+            width: auto;
+        }​
+        #page_wrap {
+            width: 100%;
+            height:auto;
+        }
+        #page_content {
+            margin: 0;
+            float: left;
+        }
+    </style>
+    <script type="text/javascript" src="<?php echo $url.'jquery/jquery.latest.js'; ?>"></script>
+</head>
+
+<body>
+    <div id="page_wrap">
+        <div id="page_content">
+            <?php
+
+
+            $products = Mage::getSingleton('core/session')->getPrintArr();
+            if(count($products) > 0){
+                foreach($products as $key=>$value){
+                    for($i=0; $i<$value; $i++){
+                            echo '<div class="pak"><img src="'.str_replace('index.php/', '', Mage::getUrl('media/barcode').$key.'.png').'" alt="Barcode" class="pokemon" /></div>';
+
+                    }
+
+                }
+            }
+            Mage::getSingleton('core/session')->setPrintArr();
+            ?>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(window).load(function(){
+            $('.pak').find('img').each(function(){
+                var imgClass = (this.width/this.height > 1) ? 'wide' : 'tall';
+                $(this).addClass(imgClass);
+            })
+        })
+
+    </script>
+</body>
+
+<?php } elseif (Mage::getStoreConfig("barcode/product/bcodelayout") == "0") { ?>
+</head>
+<body>
+<div style="width: 750px; height:auto;">
+    <div style="margin: 0;float: left;">
+        <?php
+        $products = Mage::getSingleton('core/session')->getPrintArr();
+        if(count($products) > 0){
+            $count = 0;
+            foreach($products as $key=>$value){
+                for($i=0; $i<$value; $i++){
+                    if($count%2==0){
+                        echo '<div style="margin: 0 90px 56px 0; float: left;"><img src="'.str_replace('index.php/', '', Mage::getUrl('media/barcode').$key.'.png').'" alt="Barcode" /></div>';
+                    }
+                    else{
+                        echo '<div style="margin: 0 0 56px 0; float: left;"><img src="'.str_replace('index.php/', '', Mage::getUrl('media/barcode').$key.'.png').'" alt="Barcode" /></div>';
+                    }
+                    $count++;
+
+                    if ( ($count % 14 == 0) &&  ($count >= 14))
+                    {
+                        echo '<div style="height: 52px; width: 100%; float: left;">&nbsp;</div>';
+                    }
+                }
+
+            }
+        }
+        Mage::getSingleton('core/session')->setPrintArr();
+        ?>
+    </div>
+</div>
+
+<?php } ?>
+<script type="text/javascript">
+    window.print();
+</script>
+</body>
+</html>

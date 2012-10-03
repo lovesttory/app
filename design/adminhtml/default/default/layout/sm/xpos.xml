@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addCss">
+                <name>sm/xpos/license.css</name>
+            </action>
+        </reference>
+    </default>
+
+    <adminhtml_xpos_orderlist>
+        <reference name="content">
+            <block type="xpos/adminhtml_sales_order_grid" name="sales_order.grid.container" />
+        </reference>    
+    </adminhtml_xpos_orderlist>
+    
+    <adminhtml_xpos_index>
+        <reference name="head">
+            <action method="setTemplate">
+                <template>sm/xpos/page/head.phtml</template>
+            </action>
+            <action method="addJs">
+                <file>sm/mage/adminhtml/product/composite/configure.js</file>
+            </action>            
+            <action method="addJs">
+                <file>sm/xpos/jstorage.js</file>
+            </action>                                            
+            <action method="addCss">
+                <file>sm/xpos/global.css</file>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>sm/xpos/iestyles.css</name>
+                <params/>
+                <if>lt IE 8</if>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>sm/xpos/below_ie7.css</name>
+                <params/>
+                <if>lt IE 7</if>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>sm/xpos/ie7.css</name>
+                <params/>
+                <if>IE 7</if>
+            </action>            
+            <action method="addJs">
+                <file>sm/mage/adminhtml/sales.js</file>
+            </action>
+            <action method="addJs">
+                <file>sm/xpos/xpos.js</file>
+            </action>
+            
+
+            <action method="addJs">
+                <file>sm/jqueryui/js/jquery-1.7.1.min.js</file>
+            </action>            
+            <action method="addJs">
+                <file>sm/jqueryui/js/jquery-ui-1.8.18.custom.min.js</file>
+            </action>                        
+            <action method="addCss">
+                <file>sm/xpos/jqueryui/jquery-ui-1.8.18.custom.css</file>
+            </action>            
+            <action method="addJs">
+                <file>sm/xpos/parse-track-data.js</file>
+            </action>                                    
+            <action method="addCss">
+                <file>sm/xpos/jquery.countdown.css</file>
+            </action>            
+            <action method="addJs">
+                <file>sm/xpos/jquery.countdown.pack.js</file>
+            </action>                                                
+<!--            
+            <action method="addJs"><file>sm/xpos/jquery.indexeddb.new.js</file></action>            
+            <action method="addJs"><file>sm/xpos/offline.js</file></action>                        
+-->            
+            <action method="addJs">
+                <file>mage/adminhtml/giftmessage.js</file>
+            </action>
+
+            <action method="addJs">
+                <file>sm/varien/configurable.js</file>
+            </action>
+            <action method="addJs">
+                <file>sm/mage/adminhtml/giftoptions/tooltip.js</file>
+            </action>
+            
+            <action method="removeItem">
+                <type>js</type>
+                <name>extjs/ext-tree.js</name>
+            </action>
+            <action method="removeItem">
+                <type>js</type>
+                <name>extjs/ext-tree-checkbox.js</name>
+            </action>
+            <action method="removeItem">
+                <type>js</type>
+                <name>tbt/enhancedgrid/enhancedgrid.js</name>
+            </action>
+            <action method="removeItem">
+                <type>js</type>
+                <name>tbt/enhancedgrid/egsupplemental.js</name>
+            </action>
+            <action method="removeItem">
+                <type>js</type>
+                <name>tbt/enhancedgrid/customfunctions/catalog_products.js</name>
+            </action>
+            <block type="adminhtml/template" name="optional_zip_countries" as="optional_zip_countries" template="directory/js/optional_zip_countries.phtml" />
+        </reference>
+        <reference name="js">
+            <block type="adminhtml/template" template="sm/xpos/sales/order/create/js.phtml" name="create" />
+        </reference>
+        <reference name="header">
+            <action method="setTemplate">
+                <file>sm/xpos/page/header.phtml</file>
+            </action>
+            <block type="adminhtml/sales_order_create_totals_grandtotal" template="sm/xpos/sales/order/create/header_totals.phtml" name="totals" /> 
+        </reference>
+        <reference name="root">            
+            <remove name="menu" />
+            <remove name="notifications" />
+            <remove name="footer" />
+            <block type="xpos/adminhtml_sales_order_create" name="content">
+              
+                <block type="adminhtml/sales_order_create_form" template="sm/xpos/sales/order/create/form.phtml" name="form">
+                    <block type="adminhtml/store_switcher" name="store_switcher" as="store_switcher" template="sm/xpos/switcher.phtml">
+                    </block>                       
+                    <block type="adminhtml/sales_order_create_messages" name="message" />
+                    <block type="adminhtml/sales_order_create_data" template="sm/xpos/sales/order/create/data.phtml" name="data">
+                        <block type="adminhtml/sales_order_create_form_account" template="sm/xpos/sales/order/create/form/account.phtml" name="form_account" />
+                        <block type="adminhtml/sales_order_create_shipping_address" template="sales/order/create/form/address.phtml" name="shipping_address" />
+                        <block type="adminhtml/sales_order_create_billing_address" template="sales/order/create/form/address.phtml" name="billing_address" />
+                        
+                        <block type="adminhtml/sales_order_create_shipping_method" template="sales/order/create/abstract.phtml" name="shipping_method">
+                            <block type="adminhtml/sales_order_create_shipping_method_form" template="sm/xpos/sales/order/create/shipping/method/form.phtml" name="form" />
+                        </block>
+                        <block type="adminhtml/sales_order_create_billing_method" template="sales/order/create/abstract.phtml" name="billing_method">
+                            <block type="adminhtml/sales_order_create_billing_method_form" template="sm/xpos/sales/order/create/billing/method/form.phtml" name="form" />
+                        </block>
+                        <block type="adminhtml/sales_order_create_newsletter" template="sales/order/create/abstract.phtml" name="newsletter">
+                            <block type="adminhtml/sales_order_create_newsletter_form" template="sales/order/create/newsletter/form.phtml" name="form" />
+                        </block>
+                        <block type="adminhtml/sales_order_create_search" template="sales/order/create/abstract.phtml" name="search">
+                            <block type="adminhtml/sales_order_create_search_grid" name="grid" />
+                        </block>                        
+                        <block type="adminhtml/sales_order_create_coupons" template="sm/xpos/sales/order/create/coupons/form.phtml" name="coupons">
+                            <block type="adminhtml/sales_order_create_coupons_form" template="sm/xpos/sales/order/create/coupons/form.phtml" name="form" />
+                        </block>
+                        <block type="adminhtml/sales_order_create_items" template="sm/xpos/sales/order/create/items.phtml" name="items">
+                            <block type="xpos/adminhtml_sales_order_create_items_grid" template="sm/xpos/sales/order/create/items/grid.phtml" name="items_grid">
+                            </block>
+                        </block>
+                        <block type="xpos/adminhtml_sales_order_create_totals" template="sm/xpos/sales/order/create/totals.phtml" name="totals">                         
+                       
+                        </block>
+                        <block type="adminhtml/template" name="gift_options" template="sales/order/giftoptions.phtml">
+                            <block type="adminhtml/sales_order_create_giftmessage" template="sales/order/create/giftmessage.phtml" name="giftmessage" />
+                        </block>
+                        <block type="core/text_list" name="order_item_extra_info"></block>
+                    </block>
+                </block>
+            </block>
+        </reference>
+    </adminhtml_xpos_index>
+    
+    <adminhtml_xpos_load_block_json>
+        <reference name="root">
+            <block type="xpos/adminhtml_sales_order_create_load" name="content" />
+        </reference>
+    </adminhtml_xpos_load_block_json>
+    
+    <adminhtml_xpos_load_block_plain>
+        <reference name="root">
+            <block type="core/text_list" name="content" />
+        </reference>
+    </adminhtml_xpos_load_block_plain>
+    
+    <adminhtml_xpos_load_block_data>
+        <reference name="content">                   
+            <block type="adminhtml/sales_order_create_data" template="sm/xpos/sales/order/create/data.phtml" name="data">
+                <block type="adminhtml/sales_order_create_form_account" template="sm/xpos/sales/order/create/form/account.phtml" name="form_account" />
+
+                <block type="adminhtml/sales_order_create_shipping_method" template="sales/order/create/abstract.phtml" name="shipping_method">
+                    <block type="adminhtml/sales_order_create_shipping_method_form" template="sm/xpos/sales/order/create/shipping/method/form.phtml" name="form" />
+                </block>
+                <block type="adminhtml/sales_order_create_billing_method" template="sales/order/create/abstract.phtml" name="billing_method">
+                    <block type="adminhtml/sales_order_create_billing_method_form" template="sm/xpos/sales/order/create/billing/method/form.phtml" name="form" />
+                </block>
+                <block type="adminhtml/sales_order_create_newsletter" template="sales/order/create/abstract.phtml" name="newsletter">
+                    <block type="adminhtml/sales_order_create_newsletter_form" template="sales/order/create/newsletter/form.phtml" name="form" />
+                </block>
+                <block type="adminhtml/sales_order_create_search" template="sales/order/create/abstract.phtml" name="search">
+                    <block type="adminhtml/sales_order_create_search_grid" name="grid" />
+                </block>                        
+                <block type="adminhtml/sales_order_create_coupons" template="sm/xpos/sales/order/create/coupons/form.phtml" name="coupons">
+                    <block type="adminhtml/sales_order_create_coupons_form" template="sm/xpos/sales/order/create/coupons/form.phtml" name="form" />
+                </block>
+                <block type="adminhtml/sales_order_create_items" template="sm/xpos/sales/order/create/items.phtml" name="items">
+                    <block type="xpos/adminhtml_sales_order_create_items_grid" template="sm/xpos/sales/order/create/items/grid.phtml" name="items_grid">
+                    </block>
+                </block>
+                <block type="xpos/adminhtml_sales_order_create_totals" template="sm/xpos/sales/order/create/totals.phtml" name="totals" />
+                <block type="adminhtml/template" name="gift_options" template="sales/order/giftoptions.phtml">
+                    <block type="adminhtml/sales_order_create_giftmessage" template="sales/order/create/giftmessage.phtml" name="giftmessage" />
+                </block>
+                <block type="core/text_list" name="order_item_extra_info"></block>
+            </block> 
+        </reference>
+    </adminhtml_xpos_load_block_data>   
+    
+    <adminhtml_xpos_load_block_header>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_header" name="header" />
+        </reference>
+    </adminhtml_xpos_load_block_header>
+
+    <adminhtml_xpos_load_block_form_account>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_form_account" template="sm/xpos/sales/order/create/form/account.phtml" name="form_account" />
+        </reference>
+    </adminhtml_xpos_load_block_form_account>
+
+    <adminhtml_xpos_load_block_shipping_address>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_shipping_address" template="sales/order/create/form/address.phtml" name="shipping_address" />
+        </reference>
+    </adminhtml_xpos_load_block_shipping_address>
+
+    <adminhtml_xpos_load_block_billing_address>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_billing_address" template="sales/order/create/form/address.phtml" name="billing_address" />
+        </reference>
+    </adminhtml_xpos_load_block_billing_address>
+
+    <adminhtml_xpos_load_block_shipping_method>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_shipping_method" template="sales/order/create/abstract.phtml" name="shipping_method">
+                <block type="adminhtml/sales_order_create_shipping_method_form" template="sm/xpos/sales/order/create/shipping/method/form.phtml" name="form" />
+            </block>
+        </reference>
+    </adminhtml_xpos_load_block_shipping_method>
+
+    <adminhtml_xpos_load_block_billing_method>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_billing_method" template="sales/order/create/abstract.phtml" name="billing_method">
+                <block type="adminhtml/sales_order_create_billing_method_form" template="sm/xpos/sales/order/create/billing/method/form.phtml" name="form" />
+            </block>
+        </reference>
+    </adminhtml_xpos_load_block_billing_method>
+
+    <adminhtml_xpos_load_block_newsletter>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_newsletter" template="sales/order/create/abstract.phtml" name="newsletter">
+                <block type="adminhtml/sales_order_create_newsletter_form" template="sales/order/create/newsletter/form.phtml" name="form" />
+            </block>
+        </reference>
+    </adminhtml_xpos_load_block_newsletter>
+
+    <adminhtml_xpos_load_block_search>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_search" template="sales/order/create/abstract.phtml" name="search">
+                <block type="adminhtml/sales_order_create_search_grid" name="grid" />
+            </block>
+        </reference>
+    </adminhtml_xpos_load_block_search>
+
+    <adminhtml_xpos_load_block_search_grid>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_search_grid" name="grid" />
+        </reference>
+    </adminhtml_xpos_load_block_search_grid>
+
+    <adminhtml_xpos_load_block_items>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_items" template="sm/xpos/sales/order/create/items.phtml" name="items">
+                <block type="xpos/adminhtml_sales_order_create_items_grid" template="sm/xpos/sales/order/create/items/grid.phtml" name="items_grid">
+                </block>
+            </block>
+            <block type="core/text_list" name="order_item_extra_info"></block>
+        </reference>
+    </adminhtml_xpos_load_block_items>
+
+    <adminhtml_xpos_load_block_comment>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_comment" template="sales/order/create/comment.phtml" name="comment" />
+        </reference>
+    </adminhtml_xpos_load_block_comment>
+
+    <adminhtml_xpos_load_block_totals>
+        <reference name="content">
+            <block type="xpos/adminhtml_sales_order_create_totals" template="sm/xpos/sales/order/create/totals.phtml" name="totals" />
+        </reference>
+    </adminhtml_xpos_load_block_totals>
+
+    <adminhtml_xpos_load_block_giftmessage>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_giftmessage" template="sales/order/create/giftmessage.phtml" name="giftmessage" />
+        </reference>
+    </adminhtml_xpos_load_block_giftmessage>
+
+    <adminhtml_xpos_load_block_message>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_messages" name="message" />
+        </reference>
+    </adminhtml_xpos_load_block_message>
+
+    <adminhtml_xpos_load_block_customer_grid>
+        <reference name="content">
+            <block type="adminhtml/sales_order_create_customer_grid" name="grid" />
+        </reference>
+    </adminhtml_xpos_load_block_customer_grid>
+    
+    <adminhtml_xpos_load_block_order_grid>
+        <reference name="content">
+            <block type="xpos/adminhtml_sales_order_create_order_grid" name="order_grid" />
+        </reference>
+    </adminhtml_xpos_load_block_order_grid>
+    
+    <adminhtml_xpos_print>
+        <reference name="head">
+            <action method="addCss">
+                <file>sm/xpos/print.css</file>
+            </action>
+            <action method="addJs">
+                <file>mage/adminhtml/giftmessage.js</file>
+            </action>
+            <action method="addJs">
+                <file>mage/adminhtml/giftoptions/tooltip.js</file>
+            </action>
+        </reference>
+        <reference name="root">
+            <remove name="header" />
+            <remove name="menu" />
+            <remove name="notifications" />
+            <remove name="footer" />
+        </reference>        
+        <reference name="content">            
+            <block type="adminhtml/sales_order_view_tab_info" name="order_tab_info" template="sm/xpos/sales/order/view/tab/info.phtml">
+                <block type="adminhtml/sales_order_view_info" name="order_info" template="sm/xpos/sales/order/view/info.phtml">
+                    <block type="adminhtml/sales_order_payment" name="order_payment"/>
+                </block>
+                <block type="adminhtml/sales_order_view_items" name="order_items" template="sm/xpos/sales/order/view/items.phtml">
+                    <action method="addItemRender">
+                        <type>default</type>
+                        <block>adminhtml/sales_order_view_items_renderer_default</block>
+                        <template>sm/xpos/sales/order/view/items/renderer/default.phtml</template>
+                    </action>
+                    <action method="addColumnRender">
+                        <column>qty</column>
+                        <block>adminhtml/sales_items_column_qty</block>
+                        <template>sm/xpos/sales/items/column/qty.phtml</template>
+                    </action>
+                    <action method="addColumnRender">
+                        <column>name</column>
+                        <block>adminhtml/sales_items_column_name</block>
+                        <template>sales/items/column/name.phtml</template>
+                    </action>
+                    <action method="addColumnRender">
+                        <column>name</column>
+                        <block>adminhtml/sales_items_column_name_grouped</block>
+                        <template>sales/items/column/name.phtml</template>
+                        <type>grouped</type>
+                    </action>
+                    <block type="core/text_list" name="order_item_extra_info" />
+                </block>                
+                <block type="adminhtml/sales_order_totals" name="order_totals" template="sm/xpos/sales/order/totals.phtml">
+                    <block type="adminhtml/sales_order_totals_tax" name="tax" template="sm/xpos/sales/order/totals/tax.phtml" />
+                </block>                
+            </block>
+        </reference>
+    </adminhtml_xpos_print>       
+</layout>

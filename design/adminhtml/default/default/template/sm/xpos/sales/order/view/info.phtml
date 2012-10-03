@@ -1,0 +1,68 @@
+<?php $_order = $this->getOrder() ?>
+<?php
+$orderStoreDate = $this->formatDate($_order->getCreatedAtStoreDate(), 'medium');
+$orderStoreTime = $this->formatTime($_order->getCreatedAtStoreDate(), 'medium');
+?>
+<div class="entry-edit">
+    <table cellspacing="0" class="box-left form-list">
+    <tr>
+        <td class="label"><label><?php echo Mage::helper('sales')->__("Order No.");?></label></td>
+        <td class="value"><strong><?php echo $_order->getRealOrderId() ?></strong></td>
+    </tr>        
+    <tr>
+        <td class="label"><label><?php echo Mage::helper('sales')->__('Date') ?></label></td>
+        <td class="value"><strong><?php echo $orderStoreDate ?></strong></td>
+    </tr>
+    <?php 
+        $defaultName = Mage::getStoreConfig('xpos/general/default_name');
+    ?>
+    <?php
+        $email = $_order->getCustomerEmail();
+        $email = explode('@', $email);
+        if(!is_numeric($email[0])) :
+    ?>
+    <tr>
+        <td class="label"><label><?php echo Mage::helper('sales')->__('Customer') ?></label></td>
+        <td class="value"><strong><?php echo  $_order->getCustomerFirstname() . ' ' .
+                        $_order->getCustomerLastname() . '<br>' .
+                        $_order->getBillingAddress()->getTelephone()
+                        ?></strong></td>
+    </tr>
+    <?php elseif(!empty($defaultName)):?>
+    <tr>
+        <td class="label"><label><?php echo Mage::helper('sales')->__('Customer') ?></label></td>
+        <td class="value"><strong><?php echo $defaultName ?></strong></td>    
+    </tr>
+    <?php endif;?>
+    </table>
+    <table cellspacing="0" class="box-right form-list">
+    <tr>
+        <td class="label"><label><?php echo Mage::helper('sales')->__("Time");?></label></td>
+        <td class="value"><strong><?php echo $orderStoreTime ?></strong></td>
+    </tr>        
+    <tr><td class="label"><label><?php echo Mage::helper('sales')->__("Payment");?></label></td>
+        <td class="value"><?php echo $this->getChildHtml('order_payment') ?></td>
+    </tr>
+    </table>
+    <div class="clear"></div>
+    
+    <?php
+        //Get comment for this order 
+        $_statusHistory = Mage::getResourceModel('sales/order_status_history_collection')
+        ->setOrderFilter($_order)
+        ->setOrder('entity_id', 'asc');
+        
+        foreach ($_statusHistory as $status): ?>
+        <?php if($status->getComment()): ?>
+            <table cellspacing="0" class="form-list">
+             <tr>
+                <td class="label"><label><?php echo Mage::helper('sales')->__('Comments') ?></label></td>
+                <td class="value"><strong><?php echo $status->getComment() ?></strong></td>    
+            </tr>
+            </table>
+       <?php endif;?>
+       <?php break;?>
+    <?php endforeach; ?>
+    <div class="clear"></div>
+</div>
+<div class="clear"></div>

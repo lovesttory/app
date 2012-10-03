@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config>
+    <global>
+        <models>
+            <rimessadiretta>
+                <class>Mage_RimessaDiretta_Model</class>
+            </rimessadiretta>
+        </models>
+
+        <resources>
+            <rimessadiretta_setup>
+                <setup>
+                    <module>Mage_RimessaDiretta</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </rimessadiretta_setup>
+            <rimessadiretta_write>
+                <use>core_write</use>
+            </rimessadiretta_write>
+            <rimessadiretta_read>
+                <use>core_read</use>
+            </rimessadiretta_read>
+        </resources>
+    </global>
+
+    <default>
+        <payment>
+            <rimessadiretta>
+                <active>0</active>
+                <model>rimessadiretta/RimessaDiretta</model>
+                <order_status>1</order_status>
+                <title>Rimessa diretta</title>
+                <allowspecific>0</allowspecific>
+            </rimessadiretta>
+         </payment>
+    </default>
+
+    <adminhtml>       
+        <translate>
+            <modules>
+                <Mage_RimessaDiretta>
+                    <files>
+                        <default>Mage_RimessaDiretta.csv</default>
+                    </files>
+                </Mage_RimessaDiretta>
+            </modules>
+        </translate>
+    </adminhtml>
+ 
+    <frontend>       
+        <translate>
+            <modules>
+                <Mage_RimessaDiretta>
+                    <files>
+                        <default>Mage_RimessaDiretta.csv</default>
+                    </files>
+                </Mage_RimessaDiretta>
+            </modules>
+        </translate>        
+    </frontend> 
+</config>

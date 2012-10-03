@@ -1,0 +1,233 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     sportinew
+ * @copyright   Copyright (c) 2012 TeleType (http://www.teletype.it)
+ * @copyright   Copyright (c) 2011 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+/**
+ * Template for Mage_Page_Block_Html
+ */
+?>
+<!doctype html>  
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="<?php echo $this->getLang() ?>"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="<?php echo $this->getLang() ?>"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="<?php echo $this->getLang() ?>"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="<?php echo $this->getLang() ?>"> <!--<![endif]-->
+<head>
+<?php echo $this->getChildHtml('head') ?>
+</head>
+<body<?php echo $this->getBodyClass()?' class="'.$this->getBodyClass().'"':'' ?>>
+<?php echo $this->getChildHtml('after_body_start') ?>
+<div class="wrapper">
+    <?php echo $this->getChildHtml('global_notices') ?>
+    <div class="page">
+        <?php echo $this->getChildHtml('header') ?>
+        <div class="main-container col2-left-layout">
+            <div class="main">
+                <?php echo $this->getChildHtml('breadcrumbs') ?>
+                <div class="col-main">
+                    <?php echo $this->getChildHtml('global_messages') ?>
+                  <div class="consel-page">
+<script>
+                                            function cambiaperc(){
+                                                var ind = document.forms['conselFormAdmin'].selpercmax.selectedIndex;
+                                                var permax = document.forms['conselFormAdmin'].selpercmax[ind].value;
+                                                document.forms['conselFormAdmin'].percmax.value = permax;
+                                            }
+                                            
+                                            function formattavaluta(input){
+                                                var sv = input
+                                                var rs = "";
+                                                var ts = "";
+                                                var tn = 0;
+                                                tn = Math.round(sv);
+                                                if (tn < 10) {
+                                                    ts = "00" + tn
+                                                }
+                                                else 
+                                                    if (tn < 100) {
+                                                        ts = "0" + tn
+                                                    }
+                                                    else {
+                                                        ts = "" + tn
+                                                    }
+                                                
+                                                if (ts.length > 9) {
+                                                    alert("Noo!!!");
+                                                    return sv
+                                                }
+                                                
+                                                if (ts.length > 3) {
+                                                    if (ts.length == 4) {
+                                                        rs += ts.substring(0, 1) + "." + ts.subtring(1, ts.length)
+                                                    }
+                                                    else 
+                                                        if (ts.length == 5) {
+                                                            rs += ts.substring(0, 2) + "." + ts.substring(2, ts.length)
+                                                        }
+                                                        else 
+                                                            if (ts.length == 6) {
+                                                                rs += ts.substring(0, 3) + "." + ts.substring(3, ts.length)
+                                                            }
+                                                            else 
+                                                                if (ts.length == 7) {
+                                                                    rs += ts.substring(0, 1) + "." + ts.substring(1, 4) + "." + ts.substring(4, ts.length)
+                                                                }
+                                                                else 
+                                                                    if (ts.length == 8) {
+                                                                        rs += ts.substring(0, 2) + "." + ts.substring(2, 5) + "." + ts.substring(5, ts.length)
+                                                                    }
+                                                }
+                                                else {
+                                                    rs += ts.substring(0, ts.length)
+                                                }
+                                                return rs
+                                            }
+                                            
+                                            function perinviare(){
+                                                //document.forms['conselFormAdmin'].fparz1.value = formattavaluta(document.forms['conselFormAdmin'].impspe.value); 
+                                                var c = document.forms['conselFormAdmin'];
+                                                c.action = "https://reserved.e-consel.it/ecom/ecommercep2a.mac/chklog";
+                                                c.submit(c);
+                                            }
+                                            
+                                            function perinviarevar(){
+                                                //document.forms['conselFormAdmin'].fparz1.value = formattavaluta(document.forms['conselFormAdmin'].impspe.value); 
+                                                var c = document.forms['conselFormAdmin'];
+                                                c.action = "https://reserved.e-consel.it/ecom/ecommercep2.mac/chklogvar";
+                                                c.submit(c);
+                                            }
+                                            
+                                            //-->
+                                        </script>
+										<div class="page-title"><h1>Richiesta finanziamenti - uso interno</h1></div>
+                                        <form action="https://reserved.e-consel.it/ecom/ecommercep2a.mac/chklog" method="post" name="conselFormAdmin" target="_blank">
+                                          <input type=hidden name="convenz" value="0019363">
+                                          <input type=hidden name="tipoesec" value="T">
+                                          <table class="data-table">
+                                          	<tr>
+                                              <td>Cognome</td>
+                                              <td><input type=text name=cognome size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Nome</td>
+                                              <td><input type=text name=nome size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Indirizzo</td>
+                                              <td><input type=text name=indirizzo size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Luogo di residenza</td>
+                                              <td><input type=text name=tuopaeser size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Provincia</td>
+                                              <td><input type=text name=tuacittar size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Prefisso</td>
+                                              <td><input type=text name=tel_pref  size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Numero di telefono</td>
+                                              <td valign="top"><input type=text name=tel_num size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Numero ordine</td>
+                                              <td><input type=text name=ordine size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Anticipo</td>
+                                              <td><input type=text name=anticipo size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Descrizione 1</td>
+                                              <td><input type="text" name="descri1" value="Carrello Fit e Gym"></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Importo parziale 1</td>
+                                              <td><input type="text" name="parz1"  size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Importo spesa</td>
+                                              <td><input type="text" name="impspe" size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Importo da finanziare</td>
+                                              <td><input type=text name=impdafin size="30" style="font-size:14px" ></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Tabella finanziaria</td>
+                                              <td>
+                                              <select name="tabfin" style="font-size:14px" >
+                                             <option value="MPF">Tasso 0</option>
+                                             <option value="WIP">Prima rata a 90 giorni</option>
+                                             <option value="WIN">Standard - prima rata a 30 giorni</option>
+                                             </select>
+                                             </td>
+                                            </tr>
+<!--<tr> 
+		<td>ASSICURAZIONE</td> 
+		<td><input type=text name=assicuraz value='PP'></td> 
+	</tr> 
+	<tr> 
+		<td>COMMISSIONI:</td>
+    	<td><input type=text name=commi value="" ></td>
+    </tr>
+    <tr> 
+		<td>Percentuale maxirata:</td>
+    	<td> 
+<select name="selpercmax" size="1" onchange="cambiaperc()"> 
+<option value="000">PERCENTUALE? 
+<option value="010">010</option> 
+<option value="020">020</option> 
+<option value="030">030</option> 
+<option value="040">040</option> 
+</select> <input type=text name=percmax value="" size=3 maxlength=3>
+		</td>
+	</tr>-->
+                                            <tr>
+                                              <td>
+                                              	<input type=hidden name="h_merce" value="AS ">
+                                              <input type=hidden name="h_prod" value="52"></td>
+                                              <td>
+                                           	  <input type="button" value="        Invio a Consel        " onClick="perinviare()" style="font-size:14px" ></td>
+                                            </tr>
+                                          </table>
+                                          <p>Visita il sito <a href="http://www.e-consel.it/trasparenza/Ecommerce_dealer.htm" target="_blank" >www.e-consel.it</a> per avere tutte le informazioni e conoscere le condizioni applicate.</p>
+                                        </form>
+                </div>
+                </div>
+                <div class="col-left sidebar"><?php echo $this->getChildHtml('left') ?></div>
+            </div>
+        </div>
+        <?php echo $this->getChildHtml('footer') ?>
+        <?php echo $this->getChildHtml('before_body_end') ?>
+    </div>
+</div>
+<?php echo $this->getAbsoluteFooter() ?>
+</body>
+</html>

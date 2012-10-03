@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">    
+    <adminhtml_barcode_order_grid>
+        <block type="barcode/adminhtml_order_grid" name="barcode_order_products" output="toHtml"></block>
+    </adminhtml_barcode_order_grid>
+    
+    <adminhtml_barcode_print_oneproduct>
+		<reference name="root">
+            <action method="setTemplate"><template>sm/barcode/print_barcode.phtml</template></action>
+        </reference>
+    </adminhtml_barcode_print_oneproduct>
+    <adminhtml_barcode_product_index>
+        <reference name="head">
+            <action method="addJs"><script>barcode/submit_form.js</script></action>
+        </reference>
+        <reference name="content">
+            <block type="barcode/adminhtml_barcode" name="barcode_barcode_grid" />
+        </reference>
+    </adminhtml_barcode_product_index>
+    <adminhtml_barcode_print_multi>
+        <reference name="content">
+            <block type="barcode/adminhtml_barcode" name="barcode_barcode_grid" />
+            <block type="core/template" name="show_print_form" template="sm/barcode/show_print_form.phtml" />
+        </reference>
+    </adminhtml_barcode_print_multi>
+    <adminhtml_barcode_print_show>
+        <reference name="root">
+            <action method="setTemplate"><template>sm/barcode/print_multi_barcode.phtml</template></action>
+        </reference>
+    </adminhtml_barcode_print_show>
+    
+    <adminhtml_barcode_order_index>
+        <reference name="head">
+<!--            <action method="addCss"><name>custom.css</name></action>-->
+            <action method="addCss"><name>sm/barcode.css</name></action>
+<!--            <action method="addCss"><name>print.css</name><params>media="print"</params></action>-->
+        </reference>
+        <reference name="content">
+            <block type="barcode/adminhtml_order" name="barcode_adminhtml_order" />
+        </reference>
+    </adminhtml_barcode_order_index>
+</layout>

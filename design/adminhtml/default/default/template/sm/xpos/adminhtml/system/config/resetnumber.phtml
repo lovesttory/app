@@ -1,0 +1,46 @@
+<script type="text/javascript">
+    //<![CDATA[
+    function resetNumber() {
+        new Ajax.Request('<?php echo $this->getAjaxUrl() ?>', {
+            onSuccess: function(response) {
+                result = '<?php echo $this->__('Reset Fail') ?>';
+
+                    response = response.responseText;
+                    if (response == 1) {
+                        result = '<?php echo $this->__('Reset Success') ?>';
+                    }
+                $('reset_result').update(result);
+
+                new Ajax.Request('<?php echo $this->getAjaxGetlastorderUrl() ?>', {
+                    onSuccess:function(reponse) {
+                        document.getElementById('lastorderid').value = reponse.responseText;
+                    }
+
+                });
+            },
+
+            onFailure:function(reponse) {
+                result = '<?php echo $this->__('Reset Fail') ?>';
+                $('reset_result').update(result);
+            }
+        });
+
+
+    }
+
+    function _disableResetnumber() {
+        $('xpos_general_resetnumber').disable();
+        $('reset_result').update('Disabled. Please Save Config To Proceed.')
+    };
+
+    function disableButton() {
+        $('xpos_general_storeid').observe('change' , _disableResetnumber);
+    }
+
+    document.observe("dom:loaded", disableButton);
+
+    //]]>
+</script>
+<button onclick="resetNumber();" class="scalable" type="button" id="<?php echo $this->getHtmlId() ?>">
+    <span id="reset_result"><?php echo $this->escapeHtml($this->getButtonLabel()) ?></span>
+</button>

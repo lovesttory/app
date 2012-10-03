@@ -1,0 +1,9 @@
+<?php
+$menuItems = $this->getSidebarMenu();
+if (count($menuItems)) { ?>
+<div class="b-flexible-menu-sidebar-container">
+<ul>
+<?php 
+foreach($menuItems as $menuItem) { ?>
+		<li class="<?php echo implode(" ", $menuItem->classes) ?>"><?php echo $menuItem->label ?></li>
+<?php } ?></ul></div><?php } ?>

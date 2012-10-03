@@ -1,0 +1,467 @@
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head fieldset-legend <?php echo $this->getHeaderCssClass() ?>"><?php echo $this->getHeaderText() ?></h4>
+    </div>
+    <input type="hidden" name="order[account][group_id]" value="1" />
+    <div id="customer_account_fields">                
+        <div class="box-left">
+            <div id="customer_guest">
+                <input id="guest_customer" type="radio" name="order[account][type]" value="guest" checked="checked"/>
+                <label for="guest_customer"><?php echo $this->__("As Guest Checkout") ?></label>
+                <div id="customer_guest_content">
+                    <input id="guest_customer_id" disabled="disabled" type="hidden" name="order[customer_id]" value="false" />
+                </div>
+            </div>
+            <div id="customer_exist">
+                <input id="exist_customer" type="radio" name="order[account][type]" value="exist" />
+                <label for="exist_customer"><?php echo $this->__("Existing Customer") ?></label>                
+                <div id="customer_exist_content" class="block">
+                    <input id="customer_search" disabled="disabled" type="text" class="input-text" value="<?php echo $this->__("Phone/Email") ?>" onfocus="this.value='';" onblur="if(this.value == '') this.value='<?php echo $this->__("Phone/Email") ?>'"/>
+                    <input style="display: none" id="customer_search_offline" disabled="disabled" type="text" class="input-text" value="<?php echo $this->__("Phone/Email Offline") ?>" onfocus="this.value='';" onblur="if(this.value == '') this.value='<?php echo $this->__("Phone/Email Offline") ?>'"/>
+                    <span id="customer_search_indicator" class="autocomplete-indicator" style="display: none">
+                        <img src="<?php echo $this->getSkinUrl('images/ajax-loader.gif') ?>" alt="<?php echo $this->__('Loading...') ?>" class="v-middle"/>
+                    </span>
+                    <div id="customer_search_autocomplete" class="autocomplete" style="display: none"></div>
+                    <input id="order_customer_id" type="hidden" disabled="disabled" name="order[customer_id]" value="false" />
+                    <input id="order_account_email" type="hidden" disabled="disabled" name="order[account][email]" class="required-entry" value="" />                    
+                </div>
+                <div id="customer_exist_data" style="padding-left: 15px;"></div>
+                <script type="text/javascript">                
+                    function getCustomerSelectionId(li) {
+                        $('order_customer_id').value = li.getAttribute('id');
+                        $('order_account_email').value = li.getAttribute('email');
+                        var customerData = "";
+                        customerData += '<strong>'+li.getAttribute('name')+"</strong><br />";
+                        customerData += li.getAttribute('telephone')+"<br/>";                    
+                        $("customer_exist_data").update(customerData);
+                        $("customer_search").value='Phone/Email';
+                    }
+<?php $_session = Mage::getSingleton('adminhtml/session_quote'); ?>
+<?php if ($customerId = $_session->getCustomerId()): ?>
+    <?php
+    $customer = Mage::getModel('customer/customer')->load($customerId);
+    $address = $customer->getDefaultBillingAddress();
+    if ($customer && $address):
+        ?>
+                    $('order_customer_id').value = '<?php echo $customerId ?>';
+                    $('order_account_email').value = '<?php echo $customer->getEmail() ?>';
+                    var customerData = "";
+                    customerData += '<strong><?php echo $customer->getFirstname() . ' ' . $customer->getLastname() ?></strong>'+"<br/>";
+                    customerData += '<?php echo $address->getTelephone() ?>'+"<br/>";                    
+                    $("customer_exist_data").update(customerData);
+                    $("customer_search").value='Phone/Email';
+                    $("guest_customer").checked = false;
+                    $("exist_customer").checked = true;
+                    $("order_customer_id").disabled = false;
+                    $("order_account_email").disabled = false;
+                    var intExist = setInterval(function(){
+                        if (jQuery('.wrapper').is(":visible")){
+                            jQuery('input[name="order[account][type]"][value="exist"]').click();
+                            intExist = clearInterval(intExist);
+                        }
+                                                
+                    },100);
+
+    <?php endif; //if($customer && $address):     ?>
+<?php endif; //if($customerId = $_session->getCustomerId()):     ?>                
+                </script>
+                <script type="text/javascript">
+                    //<![CDATA[
+                    new Ajax.Autocompleter(
+                    'customer_search',
+                    'customer_search_autocomplete',
+                    '<?php echo $this->getUrl('adminhtml/xPos/customerSearch') ?>',
+                    {
+                        paramName: "query",
+                        minChars:3,
+                        indicator:"customer_search_indicator",
+                        updateElement:getCustomerSelectionId,
+                        evalJSON:'force',
+                        autoSelect: true
+                    }
+                );
+                    function getCustomerSelectionId(li) {
+                        $('order_customer_id').value = li.getAttribute('id');
+                        $('order_account_email').value = li.getAttribute('email');
+                        var customerData = "";
+                        customerData += '<strong>'+li.getAttribute('name')+"</strong><br/>";
+                        customerData += li.getAttribute('telephone')+"<br/>";                    
+                        $("customer_exist_data").update(customerData);
+                        $("customer_search").value='Phone/Email';
+                        $('shipping-details').show();
+                        $('order-shipping_address_fields').select('input').each(function(e) { e.disabled = false; });                                                
+                        existAddress = {
+                            'firstname' : li.getAttribute('firstname'),
+                            'lastname' : li.getAttribute('lastname'),
+                            'street' : li.getAttribute('street'),
+                            'city' : li.getAttribute('city'),
+                            'country_id' : li.getAttribute('country_id'),
+                            'region' : li.getAttribute('region'),
+                            'region' : li.getAttribute('region_id'),                            
+                            'postcode' : li.getAttribute('postcode'),
+                            'telephone' : li.getAttribute('telephone')
+                        };  
+                        setAdd(existAddress);               
+                    }
+<?php $_session = Mage::getSingleton('adminhtml/session_quote'); ?>
+<?php if ($customerId = $_session->getCustomerId()): ?>
+    <?php
+    $customer = Mage::getModel('customer/customer')->load($customerId);
+    $address = $customer->getDefaultBillingAddress();
+    if ($customer && $address):
+        ?>
+                    jQuery(document).ready(function(){
+                        $('order_customer_id').value = '<?php echo $customerId ?>';
+                        $('order_account_email').value = '<?php echo $customer->getEmail() ?>';
+                        var customerData = "";
+                        customerData += '<strong><?php echo $customer->getFirstname() . ' ' . $customer->getLastname() ?>'+"</strong><br/>";
+                        customerData += '<?php echo $address->getTelephone() ?>'+"<br/>";                    
+                        $("customer_exist_data").update(customerData);
+                        $("customer_search").value='Phone/Email';
+                        $("guest_customer").checked = false;
+                        $("exist_customer").checked = true;
+                        $("order_customer_id").disabled = false;
+                        $("order_account_email").disabled = false;
+                        $('shipping-details').show();
+                        //$('order-shipping_address_fields').select('input').each(function(e) { e.disabled = false; });                        
+                    });                                                                                                                                                                                                                                                                                    
+    <?php endif; //if($customer && $address):                                                              ?>
+<?php endif; //if($customerId = $_session->getCustomerId()):                                                              ?>
+    //]]>
+                </script>                
+            </div>
+        </div>
+        <div class="box-left">
+            <div id="new_customer">            
+                <input id="customer_new" type="radio" name="order[account][type]" value="new" />
+                <label for="customer_new"><?php echo $this->__("Create New Customer") ?></label>
+                <div id="new_customer_content">
+                    <input name="order[billing_address][firstname_temp]" type="text" disabled="disabled" 
+                           class="input-text block required-entry" 
+                           value="<?php echo $this->__("First Name") ?>" 
+                           onfocus="xpos_new_customer_onfocus(this,'<?php echo $this->__("First Name") ?>');" 
+                           onblur="xpos_new_customer_onblur(this,'<?php echo $this->__("First Name") ?>','new_customer_firstname');"/>
+                    <input name="order[billing_address][firstname]" id="new_customer_firstname" type="hidden" 
+                           disabled="disabled" 
+                           class="required-entry" 
+                           value=""/>
+
+                    <input name="order[billing_address][lastname_temp]" type="text" disabled="disabled" 
+                           class="input-text block required-entry" 
+                           value="<?php echo $this->__("Last Name") ?>" 
+                           onfocus="xpos_new_customer_onfocus(this,'<?php echo $this->__("Last Name") ?>');" 
+                           onblur="xpos_new_customer_onblur(this,'<?php echo $this->__("Last Name") ?>','new_customer_lastname');"/>
+                    <input name="order[billing_address][lastname]" id="new_customer_lastname" type="hidden" 
+                           disabled="disabled" 
+                           class="required-entry" 
+                           value=""/>
+
+                    <input name="order[account][email_temp]" type="text" disabled="disabled" 
+                           class="input-text block required-entry validate-email" 
+                           value="<?php echo $this->__("Email") ?>" 
+                           onfocus="xpos_new_customer_onfocus(this,'<?php echo $this->__("Email") ?>');" 
+                           onblur="if(this.value == '') this.value='<?php echo $this->__("Email") ?>'"/>
+
+                    <input name="order[billing_address][telephone]" type="text" disabled="disabled" 
+                           class="input-text block required-entry validate-phoneStrict" 
+                           value="<?php echo $this->__("Phone") ?>" 
+                           onfocus="xpos_new_customer_onfocus(this,'<?php echo $this->__("Phone") ?>');" 
+                           onblur="if(this.value == '') this.value='<?php echo $this->__("Phone") ?>'"/>                    
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <?php
+        $_fieldsContainerId = 'order-shipping_address_fields';
+        ?>
+        <script type="text/javascript">
+            var defaultAddress = {
+                'firstname' : 'Guest ',
+                'lastname' : 'Guest ',
+                'street' : 'Guest Address',
+                'city' : 'Guest City',
+                'country_id' : 'US',
+                'region' : 'CA',
+                'region_id' : '12',                
+                'postcode' : '95064',
+                'telephone' : '1234567890'
+            };  
+            var existAddress = defaultAddress;
+        
+            function setAdd(arr) {
+                jQuery('#order-shipping_address_address_firstname') . val(arr.firstname);
+                jQuery('#order-shipping_address_address_lastname') . val(arr.lastname);
+                jQuery('#order-shipping_address_address_street0') . val(arr.street);
+                jQuery('#order-shipping_address_address_country_id') . val(arr.country_id);
+                jQuery('#order-shipping_address_address_city') . val(arr.city);
+                jQuery('#order-shipping_address_address_region') . val(arr.region);
+                //jQuery('#order-shipping_address_address_region_id') . val(arr.region_id);                
+                jQuery('#order-shipping_address_address_postcode') . val(arr.postcode);
+                jQuery('#order-shipping_address_address_telephone') . val(arr.telephone);
+                //jQuery('#order-shipping_same_as_billing').attr('checked', true);
+                //$('order-shipping_address_fields').select('input').each(function(e2) { e2.disabled = true; });                        
+                //$('order-shipping_address_fields').select('select').each(function(e2) { e2.disabled = true; });                                            
+                //$('order-address-content').hide();                    
+                // refresh the shipping rate
+                updateShippingRates();                 
+            }            
+            order.shippingAddressContainer = '<?php echo $_fieldsContainerId ?>';
+            order.setAddresses(<?php echo $this->getAddressCollectionJson() ?>);
+        </script>
+
+        <div style="width: 100%; margin-top: 20px; display: none;" id="shipping-details">
+            <fieldset class="np">
+                <input type="checkbox" id="order-shipping_same_as_billing" name="shipping_same_as_billing" onchange="enableShipping(this);" checked />
+                <label for="order-shipping_same_as_billing" class="no-float"><?php echo Mage::helper('sales')->__('Shipping Same As Billing Address') ?></label>
+
+                <div class="order-address" id="<?php echo $_fieldsContainerId ?>">
+                    <div class="content" id="order-address-content" style="display: none;position: relative;">
+                        <div style="position:absolute; width: 100%; height:100%; top:0; left:0;display:block;" id="shipping-overlay">&nbsp;</div>                        
+                        <table class="form-list" cellspacing="0">
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_firstname"><?php echo $this->__("First Name") ?></label>                        
+                                </td>
+                                <td class="value">
+                                    <input name="order[shipping_address][firstname]" type="text"  
+                                           class="input-text block notrequired-entry" 
+                                           id="order-shipping_address_address_firstname"
+                                           value="<?php echo $defaultAddress['firstname'] ?>" 
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_lastname"><?php echo $this->__("Last Name") ?></label>                        
+                                </td>
+                                <td class="value">                            
+                                    <input id="order-shipping_address_address_lastname" name="order[shipping_address][lastname]" type="text"  
+                                           class="input-text block notrequired-entry" 
+                                           value="<?php echo $defaultAddress['lastname'] ?>" 
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_street0"><?php echo $this->__("Street Address") ?></label>                        
+                                </td>
+                                <td class="value">
+                                    <input id="order-shipping_address_address_street0" name="order[shipping_address][street][0]" type="text"  
+                                           class="input-text block notrequired-entry" 
+                                           value="<?php echo $defaultAddress['street'] ?>" 
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_city"><?php echo $this->__("City") ?></label>                        
+                                </td>
+                                <td class="value">
+                                    <input id="order-shipping_address_address_city" name="order[shipping_address][city]" type="text"  
+                                           class="input-text block notrequired-entry" 
+                                           value="<?php echo $defaultAddress['city'] ?>" 
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_country_id"><?php echo $this->__("Country") ?></label>                        
+                                </td>
+                                <td class="value">                            
+                                    <select id="order-shipping_address_address_country_id" class=" notrequired-entry select" name="order[shipping_address][country_id]" id="order-shipping_address_country_id" style="margin-left: 16px;"  onChange="changeCountry(this);">
+                                        <?php
+                                        $_countries = Mage::getResourceModel('directory/country_collection')
+                                                ->loadData()
+                                                ->toOptionArray(false);
+                                        ?>
+                                        <?php if (count($_countries) > 0): ?>
+                                            <option value="">-- Please Select --</option>
+                                            <?php foreach ($_countries as $_country): ?>
+                                                <option value="<?php echo $_country['value'] ?>">
+                                                    <?php echo $_country['label'] ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>  
+                                    <script>
+                                        function changeCountry(e){
+                                            if (isOnline()){
+                                                jQuery('#loading-mask').show();
+                                                var url = order.loadBaseUrl + 'block/' + 'region';
+                                                jQuery.ajax(url,{
+                                                    data: {
+                                                        //'json': true,
+                                                        'cid': jQuery(e).val()
+                                                    },
+                                                    success: function(data){
+                                                        if (data=="")
+                                                            jQuery('#region').html(
+                                                        '<input name="order[shipping_address][region]" type="text" class="input-text block notrequired-entry" value="<?php echo $this->__("State/Province") ?>" />'
+                                                    );
+                                                        else
+                                                            jQuery('#region').html('<select class=" notrequired-entry select" name="order[shipping_address][region]" id="order-shipping_address_region" style="margin-left: 16px;">'
+                                                            +data+'</select>');
+                                                        jQuery('#loading-mask').hide(); 
+                                                        updateShippingRates();
+                                                    }
+                                                });
+                                            }
+                                    
+                                        }
+                                    </script>
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_region"><?php echo $this->__("State/Province") ?></label>                        
+                                </td>
+                                <td class="value">                            
+                                    <div id="region">
+                                        <input id="order-shipping_address_address_region" name="order[shipping_address][region]" type="text"  
+                                               class="input-text block notrequired-entry" 
+                                               value="<?php echo $defaultAddress['region'] ?>" 
+                                    </div>
+                                    <?php /*                                    <input id="order-shipping_address_address_region_id" name="order[shipping_address][region_id]" type="text"  
+                                      class="input-text block notrequired-entry"
+                                      value="<?php echo $defaultAddress['region_id'] ?>"
+                                     */ ?>
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_postcode"><?php echo $this->__("Zip/Postal Code") ?></label>                        
+                                </td>
+                                <td class="value">                                    
+                                    <input id="order-shipping_address_address_postcode" name="order[shipping_address][postcode]" type="text"  
+                                           class="input-text block notrequired-entry" 
+                                           value="<?php echo $defaultAddress['postcode'] ?>" 
+                                </td>
+                            </tr>    
+                            <tr>
+                                <td class="label">  
+                                    <label for="order-shipping_address_address_telephone"><?php echo $this->__("Phone") ?></label>                        
+                                </td>
+                                <td class="value">                            
+                                    <input id="order-shipping_address_address_telephone" name="order[shipping_address][telephone]" type="text"  
+                                           class="input-text block notrequired-entry" 
+                                           value="<?php echo $defaultAddress['telephone'] ?>" 
+                                </td>
+                            </tr>    
+
+                        </table>
+                    </div>
+                </div>
+
+            </fieldset>
+
+        </div>   
+        <div class="clear"></div>        
+    </div>
+
+    <script type="text/javascript">    
+        
+        jQuery('#order-shipping_address_fields input').change(function() {
+            updateShippingRates();
+        });    
+            
+        function updateShippingRates(){
+            if (false){//isOnline()){
+                var data = order.serializeData(order.shippingAddressContainer).toObject(); 
+                order.isShippingMethodReseted = false;
+                //var data = order.serializeData('order-shipping_address_fields').toObject(); 
+                data.collect_shipping_rates = 1;
+                order.loadArea(['shipping_method', 'totals'], true, data);                   
+            }
+        }
+        
+    </script>    
+    <script type="text/javascript">
+        //<![CDATA[
+        $('customer_account_fields').select('input[type="radio"]').each(function(el) {
+            el.observe('click',function(e) {
+                //$('customer_account_fields').select('input[type!="radio"]').each(function(e) { e.disabled = true; });
+                if(this.checked==true && $(this.up().id+'_content')) {
+                    $(this.up().id+'_content').select('input').each(function(e) { e.disabled = false; });    
+                }
+                // shipping addr
+                if (this.value!='guest'){
+                    if (this.value != 'exist' || jQuery('#customer_exist_data').html()!=""){
+                        $('shipping-details').show();
+                        // $('order-shipping_address_fields').select('input').each(function(e) { e.disabled = false; });                        
+                        if (this.value == 'new'){
+                            setAdd(defaultAddress);                       
+                        }else{
+                            setAdd(existAddress);                       
+                        }
+                    }else{
+
+                        $('shipping-details').hide();
+                        //$('order-shipping_address_fields').select('input').each(function(e) { e.disabled = true; });                                            
+                    }
+                }else{
+                    // guest checkout
+                    setAdd(defaultAddress);   
+                    $('shipping-details').hide();
+                    //$('order-shipping_address_fields').select('input').each(function(e) { e.disabled = true; });                                            
+                }
+                $('order-shipping_same_as_billing').disabled = false;
+                // refresh the shipping rate
+                //updateShippingRates();               
+            }.bind(el));
+        });
+        function enableShipping(e){
+            if (e.checked){
+                if (jQuery('input#exist_customer').is(':checked'))
+                    setAdd(existAddress);
+                else
+                    setAdd(defaultAddress);
+                jQuery('#shipping-overlay').show();
+                $('order-shipping_address_fields').select('input').each(function(e2) { e2.disabled = true; });                        
+                $('order-shipping_address_fields').select('select').each(function(e2) { e2.disabled = true; });                                            
+                $('order-address-content').hide();                    
+            }else{
+                jQuery('#shipping-overlay').hide();
+                $('order-shipping_address_fields').select('input').each(function(e2) { e2.disabled = false; });                                            
+                $('order-shipping_address_fields').select('select').each(function(e2) { e2.disabled = false; });                                                                
+                $('order-address-content').show();                    
+            }       
+            e.disabled = false;
+        }
+        function xpos_new_customer_onfocus(obj, emptyText) {
+            if(obj.value == emptyText) obj.value='';
+        }
+
+        function xpos_new_customer_onblur(obj, emptyText, hiddenId) {
+            if(obj.value == '') {
+                obj.value = emptyText;
+                $(hiddenId).value = '';
+            } else {
+                $(hiddenId).value = obj.value;
+            }
+        }
+        //]]>
+    </script>
+    <script>
+        jQuery('input[name="order[account][type]"]').change(function(){
+            
+            if (jQuery('input[name="order[account][type]"]:checked').val()=="exist"){
+                jQuery('#customer_exist_content input').each(function(e){
+                    jQuery(e).prop('disabled', false);                   
+                });
+            }else{                             
+                jQuery('#customer_exist_content input').each(function(){
+                    jQuery(this).prop('disabled', true);                    
+                }
+            ); 
+            }
+            
+            if (jQuery('input[name="order[account][type]"]:checked').val()=="new"){
+                jQuery('#new_customer_content input').each(function(e){
+                    jQuery(e).prop('disabled', false);                   
+                });
+            }else{                             
+                jQuery('#new_customer_content input').each(function(){
+                    jQuery(this).prop('disabled', true);                    
+                }
+            );                
+
+            }           
+        });
+    </script>
+</div>

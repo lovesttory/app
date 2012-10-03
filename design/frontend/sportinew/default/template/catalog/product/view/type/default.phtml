@@ -1,0 +1,79 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2011 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php /* @var $this Mage_Catalog_Block_Product_View_Abstract */?>
+<?php $_product = $this->getProduct() ?>
+
+<?php echo $this->getChildHtml('product_type_data_extra') ?>
+<?php echo $this->getPriceHtml($_product) ?>
+<?php if (!$this->hasOptions()):
+			// visualizza altre opzioni di finanziamento se il prezzo rientra nel range finanziabile
+			$_finalPriceInclTax = $this->helper('tax')->getPrice($_product, $_product->getFinalPrice(), true);
+		if ($_finalPriceInclTax>=350 and $_finalPriceInclTax<=7750){ ?>
+			<div class="altreOpzioniFinanziamento">
+			<a href="/js/cnsl/calcolo-rata.php?importo_finanziamento=<?php echo $_finalPriceInclTax; ?>" onclick="return hs.htmlExpand(this, {
+ 			objectType: 'iframe',
+			width: 550,
+			slideshowGroup: 'vof',
+			headingEval: 'this.a.title',
+			wrapperClassName: 'titlebar' } )" title="Calcolo rata">Visualizza tutte le opzioni di finanziamento</a></div>
+		<?php }
+endif;?>
+
+	<?php // visualizza prezzo di spedizione singolo articolo solo per prodotti simple e bundle
+	$thisProductExcludeFreeShipping=$this->htmlEscape($_product->getescludi_spedizione_gratuita());
+	if (($_product->getTypeId()=='bundle') || ($_product->getTypeId()=='simple' || !$thisProductExcludeFreeShipping)) {
+		
+		// se nel range della spedizione gratuita mostra avviso
+		if (!$thisProductExcludeFreeShipping){ ?>
+		  <p class="calcolaSpedizione">Spedizione gratuita</p>
+	      <?php // altrimenti cerca spedizione minima
+		} else { ?>
+		  <p class="calcolaSpedizione">Spese di spedizione <span class="SpedizioneMinima">
+		  <?php // mostra il prezzo di spedizione minimo
+		  $thisProductWeight=0;
+		  $thisProductWeight=$this->htmlEscape($_product->getWeight());
+		  require_once($_SERVER ['DOCUMENT_ROOT'] . '/js/cnsl/funzioni-spedizioni.php');
+		  echo("&euro; ".number_format(trova_spedizione_minima($thisProductWeight),2,",",".")); ?></span></p>
+		<?php } ?>	
+			<!--
+			<a href="/calcolo-spedizioni.html?peso_articolo=<?php // echo $thisProductWeight; ?>" onclick="return hs.htmlExpand(this, {
+ 			objectType: 'iframe',
+			width: 600,
+			objectHeight: 600,
+			slideshowGroup: 'csp',
+			wrapperClassName: 'titlebar' } )" title="Calcolo spese di spedizione singolo articolo">Visualizza altre opzioni di spedizione</a></p>
+			-->
+	<?php } else { ?>
+			<p class="calcolaSpedizione">il prezzo di spedizione verra visualizzato nel <a href="/checkout/cart/">carrello...</a></p>
+	<?php } // fine modifiche ?>
+
+
+<?php if ($_product->isAvailable()): ?>
+    <p class="availability in-stock"><!-- <?php echo $this->__('Availability:') ?> --><span><?php echo $this->__('In stock') ?></span></p>
+<?php else: ?>
+    <p class="availability out-of-stock"><!-- <?php echo $this->__('Availability:') ?>  --><span><?php echo $this->__('Out of stock') ?></span></p>
+<?php endif; ?>

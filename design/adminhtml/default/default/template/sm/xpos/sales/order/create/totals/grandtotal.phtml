@@ -1,0 +1,130 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     default_default
+ * @copyright   Copyright (c) 2010 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+/**
+ * @var $this Mage_Tax_Block_Checkout_Grandtotal
+ * @see Mage_Tax_Block_Checkout_Grandtotal
+ */
+?>
+<?php if ($this->includeTax() && $this->getTotalExclTax() >= 0): ?>
+    <tr>
+        <td style="<?php echo $this->getStyle() ?>" class="a-right" colspan="<?php echo $this->getColspan(); ?>">
+            <strong><?php echo $this->helper('tax')->__('Grand Total Excl. Tax') ?></strong>
+        </td>
+        <td style="<?php echo $this->getStyle() ?>" class="a-right">
+            <strong><?php echo $this->formatPrice($this->getTotalExclTax()) ?></strong>
+        </td>
+    </tr>
+    <?php echo $this->renderTotals('taxes', $this->getColspan()); ?>
+    <tr>
+        <td style="<?php echo $this->getStyle() ?>" class="a-right" colspan="<?php echo $this->getColspan(); ?>">
+            <strong><?php echo $this->helper('tax')->__('Grand Total Incl. Tax') ?></strong>
+        </td>
+        <td style="<?php echo $this->getStyle() ?>" class="a-right">
+            <strong><?php echo $this->formatPrice($this->getTotal()->getValue()) ?></strong>
+        </td>
+    </tr>
+<?php else: ?>
+    <tr>
+        <td style="<?php echo $this->getStyle() ?>" class="a-right" colspan="<?php echo $this->getColspan(); ?>">
+            <strong><?php echo $this->getTotal()->getTitle() ?></strong>
+        </td>
+        <td style="<?php echo $this->getStyle() ?>" class="a-right">
+            <strong><?php echo $this->formatPrice($this->getTotal()->getValue()) ?></strong>
+        </td>
+    </tr>
+<?php endif; ?>
+<tr>
+    <td class="a-right">
+        <label for="cash-in"><?php echo $this->__("Cash in"); ?></label>
+    </td>
+    <td class="a-right">
+        <input type="text" class="input-text" id="cash-in" name="cash-in" value="<?php echo $this->getRequest()->getPost('cash-in'); ?>"/>    
+    </td>
+</tr>  
+<tr>
+    <td class="a-right">
+        <label for="custom-discount"><?php echo $this->__("Discounts"); ?></label>
+    </td>
+    <td class="a-right">
+        <input type="text" class="input-text" id="custom-discount" name="custom-discount" value="<?php echo $this->getRequest()->getPost('custom-discount'); ?>"/>    
+    </td>
+</tr>  
+<?php
+$balance = floatval($this->getRequest()->getPost('cash-in')) - $this->getTotal()->getValue() + floatval($this->getRequest()->getPost('custom-discount'));
+//if($balance < 0) $balance = 0;
+?>
+<tr class="balance">
+    <td class="a-right"><label for="balance"><?php echo $this->__("Balance"); ?></label></td>
+    <td class="a-right" id="balance-content"><?php echo Mage::getSingleton('adminhtml/session_quote')->getStore()->formatPrice($balance); ?></td>    
+</tr>
+<tr><td colspan="2" id="balance_hidden"><input type="hidden" name="balance" id="balance" value="<?php echo $balance; ?>" /></td></tr>
+<script type="text/javascript">
+    //<![CDATA[
+    orderTotal = <?php echo $this->getTotal()->getValue() ?>;
+    function recollectTotal(){
+        //$('balance-content').innerHTML = '';
+        var balance = 0;            
+        var orderTotal = 0;   
+        var cashin = 0;
+        var customDiscount = 0;
+        /*
+        if (jQuery('div#order-totals span.price:eq(3)').length >0) {
+            jQuery('div#order-totals span.price').each(function(index) {                
+                if (index==2){
+                    orderTotal=parseFloat(jQuery(this).html().replace(/[$,]+/g,"")); 
+                }        
+            });
+        }else{
+            orderTotal=parseFloat(jQuery('div#order-totals span.price:eq(1)').html().replace(/[$,]+/g,"")); 
+        }    */
+       orderTotal=currencyToNumber(jQuery('div#order-totals tr:contains("<?php echo Mage::helper('sales')->__('Grand Total') ?>")').find('span.price').html());
+        
+        if(parseFloat($('cash-in').value) > 0) {
+            cashin = parseFloat($('cash-in').value);
+        }
+        if(parseFloat($('custom-discount').value) > 0) {
+            customDiscount = parseFloat($('custom-discount').value);
+        }        
+        balance = cashin - orderTotal + customDiscount;
+        $('balance-content').innerHTML = "<span class='price'>"+formatCurrency(balance,priceFormat)+"</span>";
+        $('balance').value = balance;
+        orderTotal = Math.abs(orderTotal);         
+    }
+    $('cash-in').observe('blur',function(e) {
+       recollectTotal();
+    });
+    $('custom-discount').observe('blur',function(e) {
+        var val = jQuery('#custom-discount').val();
+       if (val.indexOf('%')>-1){
+            orderTotal=currencyToNumber(jQuery('div#order-totals tr:contains("<?php echo Mage::helper('sales')->__('Grand Total') ?>")').find('span.price').html());
+            val = parseFloat(val)*0.01*orderTotal;
+           jQuery('#custom-discount').val(Math.round(val*100)/100);
+       }
+       recollectTotal();
+    });    
+    
+    //]]>
+</script>

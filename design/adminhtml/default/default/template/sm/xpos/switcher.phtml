@@ -1,0 +1,29 @@
+<?php /* @var $this Mage_Core_Block_Template */ ?>
+<?php if ($websites = $this->getWebsites()): ?>
+<div style="position: relative;vertical-align: middle; width: 100%;background:#FAFAFA;text-align:right;border-top:1px solid #DDD;height: 30px;line-height: 30px;">
+<?php echo $this->__('Choose Store View:') ?>&nbsp;
+<select name="store_id" id="store_switcher">
+    <?php foreach ($websites as $website): ?>
+        <?php $showWebsite = false; ?>
+        <?php foreach ($website->getGroups() as $group): ?>
+            <?php $showGroup = false; ?>
+            <?php foreach ($this->getStores($group) as $store): ?>
+                <?php if ($showWebsite == false): ?>
+                    <?php $showWebsite = true; ?>
+                    <optgroup label="<?php echo $this->escapeHtml($website->getName()) ?>"></optgroup>
+                <?php endif; ?>
+                <?php if ($showGroup == false): ?>
+                    <?php $showGroup = true; ?>
+                    <optgroup label="&nbsp;&nbsp;&nbsp;<?php echo $this->escapeHtml($group->getName()) ?>">
+                <?php endif; ?>
+                <option value="<?php echo $this->escapeHtml($store->getId()) ?>"<?php if(Mage::getStoreConfig('xpos/general/storeid') == $store->getId()): ?> selected="selected"<?php endif; ?>>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $this->escapeHtml($store->getName()) ?></option>
+            <?php endforeach; ?>
+            <?php if ($showGroup): ?>
+                </optgroup>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+</select>&nbsp;&nbsp;&nbsp;
+</div>
+
+<?php endif; ?>

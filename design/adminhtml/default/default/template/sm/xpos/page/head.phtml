@@ -1,0 +1,762 @@
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+<meta http-equiv="Content-Type" content="<?php echo $this->getContentType() ?>"/>
+<title><?php echo htmlspecialchars(html_entity_decode($this->getTitle())) ?></title>
+
+<link rel="icon" href="<?php echo $this->getSkinUrl('favicon.ico') ?>" type="image/x-icon"/>
+<link rel="shortcut icon" href="<?php echo $this->getSkinUrl('favicon.ico') ?>" type="image/x-icon"/>
+
+<script type="text/javascript">
+    var BLANK_URL = '<?php echo $this->getJsUrl() ?>blank.html';
+    var BLANK_IMG = '<?php echo $this->getJsUrl() ?>spacer.gif';
+    var BASE_URL = '<?php echo $this->getUrl('*') ?>';
+    var SKIN_URL = '<?php echo $this->getSkinUrl() ?>';
+    var FORM_KEY = '<?php echo $this->getFormKey() ?>';
+</script>
+
+<?php echo $this->getCssJsHtml() ?>
+
+<?php if ($this->getCanLoadExtJs()): ?>
+    <script type="text/javascript">
+        Ext.BLANK_IMAGE_URL = BLANK_IMG;
+        Ext.UpdateManager.defaults.loadScripts = false;
+        Ext.UpdateManager.defaults.disableCaching = true;
+    </script>
+<?php endif; ?>
+
+<?php if ($this->getCanLoadTinyMce()): // TinyMCE is broken when loaded through index.php ?>
+    <script type="text/javascript" src="<?php echo $this->getJsUrl() ?>tiny_mce/tiny_mce.js"></script>
+<?php endif; ?>
+
+<script type="text/javascript">
+    Fieldset.addToPrefix(<?php echo Mage::helper('adminhtml')->getCurrentUserId() ?>);
+</script>
+<!--trungtq-->
+<style>
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+        /* add padding to account for vertical scrollbar */
+        padding-right: 20px;
+        width: 400px;
+    }
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+    */
+    * html .ui-autocomplete {
+        height: 200px;
+    }
+</style>
+
+<script>
+    function clearOrder(){
+        // reset account information
+        jQuery('#customer_exist_data').html('');
+        jQuery('input[name="order[billing_address][firstname_temp]"]').val('');
+        jQuery('input[name="order[billing_address][lastname_temp]"]').val('');
+        jQuery('input[name="order[account][email_temp]"]').val('');
+        jQuery('input[name="order[billing_address][telephone]"]').val('');    
+        jQuery('input[name="order[account][type]"][value="guest"]').click();  
+        // reset item
+        jQuery('div#order-items table.order-tables tbody tr').each(function(index){
+            var pid = jQuery(this).attr('product_id');
+            if (pid && pid.length>0 && pid!="undefined"){
+                //order.removeQuoteItem(pid);
+                try{
+                    removeProduct(pid);
+                }catch(e){}
+            }
+        });
+        selectedProduct = new Array();
+        jQuery('input[name^="item"]').remove();
+        if (!isOnline())
+            xUpdate();    
+        
+    }
+    function getSelectionIdOffline(li) {
+        recentProduct = li;                            
+        var id = parseInt($(li).readAttribute('id'));                        
+        var price = parseFloat(li.readAttribute('price'));
+        var subtotal = (price+(price*li.readAttribute('tax')/100));
+        selectedProduct[id] = {
+            id: li.readAttribute('id'),
+            name: li.readAttribute('name'),
+            qty: 1,
+            sku: li.readAttribute('sku'),
+            price: li.readAttribute('price'),
+            priceFormatted: formatCurrency(li.readAttribute('price'),priceFormat),
+            tax: li.readAttribute('tax')=="null"?0:li.readAttribute('tax'),
+            subtotal: subtotal,
+            subtotalFormatted: formatCurrency(subtotal, priceFormat)
+        };        
+        if($('order_item_'+id)) {
+            if($('order_item_'+id).visible()) var qty = parseInt($('order_item_'+id).select('.item-qty').first().getValue()) + 1;
+            else var qty = 1;
+            $('order_item_'+id).show();
+            $('order_item_'+id).select('.item-qty').first().setValue(qty);            
+        } else { 
+            $('order-items_grid').select('tbody').first().insert({
+                bottom: productTemplate.evaluate(selectedProduct[id])
+            });
+            $('order_item_'+id).down('.remove').observe("click",function(event) {
+                removeProduct(id);                
+            },false);
+            $('order_item_'+id).down('.item-qty').observe("change",function(event) {
+                updateSubTotal(id);                
+            },false);            
+            decorateTable( $('order-items_grid').select('table').first());
+            if($$(".empty-text").first()) $$(".empty-text").first().up().hide();
+        }        
+        updateSubTotal(id);
+        itemChange();
+        $("productSearch").value = '';
+        $("productSearch").focus();
+    }    
+    function unload(){
+    
+    }
+    function storeForm(){
+<?php if ($_SESSION['blankcart']): ?>
+            // trying to add an item    
+            var allProducts = $.jStorage.get("products");
+            if (!allProducts[0]){
+                alert('There isn\'t any product in the catalog.');
+                xpos_need_confirm_close = false;  
+                $.jStorage.flush();
+                history.go(-1);
+                return;
+            }
+                            
+            var id = allProducts[0].id;
+            selectedProduct[id] = {
+                id: allProducts[0].id,
+                name: allProducts[0].label,
+                qty: 1,
+                sku: allProducts[0].sku,
+                price: allProducts[0].price,
+                priceFormatted: formatCurrency(allProducts[0].price,priceFormat),
+                tax: allProducts[0].tax,
+                subtotal:(allProducts[0].price+(allProducts[0].price*allProducts[0].tax/100)),
+                subtotalFormatted: formatCurrency((allProducts[0].price+(allProducts[0].price*allProducts[0].tax/100)),priceFormat)
+            };        
+            if($('order_item_'+id)) {
+                if($('order_item_'+id).visible()) var qty = parseInt($('order_item_'+id).select('.item-qty').first().getValue()) + 1;
+                else var qty = 1;
+                $('order_item_'+id).show();
+                $('order_item_'+id).select('.item-qty').first().setValue(qty);            
+            } else { 
+                $('order-items_grid').select('tbody').first().insert({
+                    bottom: productTemplate.evaluate(selectedProduct[id])
+                });
+                $('order_item_'+id).down('.remove').observe("click",function(event) {
+                    removeProduct(id);                
+                },false);
+                $('order_item_'+id).down('.item-qty').observe("change",function(event) {
+                    updateSubTotal(id);                
+                },false);            
+                decorateTable( $('order-items_grid').select('table').first());
+                if($$(".empty-text").first()) $$(".empty-text").first().up().hide();
+            }        
+            updateSubTotal(id);
+            itemChange();
+
+            // submit to load blocks     
+            var area = ['sidebar', 'shipping_method', 'billing_method','totals', 'giftmessage'];
+            // prepare additional fields
+            var fieldsPrepare = {update_items: 1};
+            var info = $('order-items_grid').select('input', 'select', 'textarea');
+            for(var i=0; i<info.length; i++){
+                if(!info[i].disabled && (info[i].type != 'checkbox' || info[i].checked)) {
+                    fieldsPrepare[info[i].name] = info[i].getValue();
+                }
+            }
+            fieldsPrepare = Object.extend(fieldsPrepare, this.productConfigureAddFields);
+            // submit with init = true.
+            productSubmit('quote_items', area, fieldsPrepare, id);
+<?php else: ?>
+                                            
+            //$.jStorage.set("response",JSON.stringify(response)); 
+            checkInitComplete();            
+<?php endif; ?>
+      
+    }
+    
+    function checkInitComplete(){
+        var i = parseInt(window.name);
+        i++;        
+<?php if ($this->getRequest()->getParam('order_id')): ?>        
+            if (i>=2){
+                jQuery(".wrapper").fadeIn("slow");
+                initCount();
+                jQuery('#loading-mask').hide('slow'); 
+            }else{
+                //                jQuery('#loading-mask').show();
+                window.name = i;
+            }                
+                                
+<?php elseif (!$_SESSION['blankcart']): ?>  
+            if (i>=1){     
+                jQuery(".wrapper").fadeIn("slow"); 
+                //jQuery(".wrapper").fadeIn("slow");
+                initCount();
+                //            jQuery('.wrapper').fadeIn('slow');            
+                jQuery('#loading-mask').fadeOut('slow');            
+            }else{
+                jQuery('#loading-mask').show();
+                window.name = i;
+            }                    
+                                                       
+<?php else: ?>
+            if (i>=3){  
+                //jQuery(".wrapper").fadeIn("slow");
+                initCount();
+                //            jQuery('.wrapper').fadeIn('slow');            
+                jQuery('#loading-mask').fadeOut('slow');            
+            }else{
+                jQuery('#loading-mask').show();
+                window.name = i;
+            }                        
+                                               
+<?php endif; ?>
+
+    }
+    function productSubmit(listType, area, fieldsPrepare, /*itemsFilter,*/ tmpid) {
+        if (tmpid == null)
+            tmpid = false;
+        // prepare loading areas and build url
+        area = order.prepareArea(area);
+        order.loadingAreas = area;
+        var url = order.loadBaseUrl + 'block/' + area + '?isAjax=true';
+
+        // prepare additional fields
+        fieldsPrepare = order.prepareParams(fieldsPrepare);
+        //fieldsPrepare.reset_shipping = 1; -- Disable Reset Shipping
+        fieldsPrepare.json = 1;
+
+        // create fields
+        var fields = [];
+        for (var name in fieldsPrepare) {
+            fields.push(new Element('input', {
+                type: 'hidden', 
+                name: name, 
+                value: fieldsPrepare[name]
+            }));
+        }
+        if (typeof productConfigure == 'undefined'){
+            productConfigure = new ProductConfigure();
+            document.fire('xpos:productConfigure_created');
+        }
+        productConfigure.addFields(fields);
+        /*
+            // filter items
+            if (itemsFilter) {
+                productConfigure.addItemsFilter(listType, itemsFilter);
+            }
+         */            
+        // prepare and do submit
+        productConfigure.addListType(listType, {
+            urlSubmit: url
+        });
+        if (tmpid){               
+            productConfigure.setOnLoadIFrameCallback(listType, function(response){
+                //alert(JSON.stringify(response));
+                
+                $.jStorage.set("response",JSON.stringify(response)); 
+                //load block
+                //xUpdate();                          
+                //remove temp prod
+                //removeProduct(tmpid); 
+                setTimeout('rmTmp()',500);
+                
+                //order.removeQuoteItem(tmpid);
+                selectedProduct = [];
+                order.orderItemChanged = false;
+                //xUpdate();     
+
+                checkInitComplete();
+                //order.loadAreaResponseHandler(response);
+            }.bind(this));
+        }else{
+            productConfigure.setOnLoadIFrameCallback(listType, function(response){
+                $.jStorage.set("response",JSON.stringify(response)); 
+                //$.jStorage.set("response",response); 
+                order.orderItemChanged = false;
+                xUpdate();    
+                //checkInitComplete();                    
+                order.loadAreaResponseHandler(response);
+            }.bind(this));        
+        }
+        productConfigure.submit(listType);       
+        // clean
+        order.productConfigureAddFields = {};
+        
+    }    
+    function rmTmp(){
+        var tmpid2 = jQuery('div#order-items table.order-tables tbody tr:first td:eq(1)').html();
+        //alert(tmpid2);
+        if (tmpid2!=null){
+            //alert(tmpid2);
+            order.removeQuoteItem(tmpid2);
+            selectedProduct = new Array();
+            //            order.loadArea(['items', 'shipping_method', 'totals'], true,{remove_item:tmpid2, from:'quote',reset_shipping: true});            
+            setTimeout('xUpdate(true);jQuery(".wrapper").fadeIn("slow");',3000);
+        }else{
+            //alert('kieu deo j y');
+            xUpdate();
+            //            tmpid2 = jQuery('div#order-items table.order-tables tbody tr:eq(1) td:eq(1)').html();
+            //            if (tmpid2!=null){
+            //            alert(tmpid2);                
+            //                order.removeQuoteItem(tmpid2);
+            //                //order.loadArea(['items', 'shipping_method', 'totals'], true, {remove_item:tmpid2, from:'quote',reset_shipping: true}); 
+            //                setTimeout('xUpdate(true)',3000);
+            //            }else{ 
+            setTimeout('rmTmp2()',2000);
+            //            }
+        }
+
+    }
+    function rmTmp2(){
+        var tmpid2 = jQuery('div#order-items table.order-tables tbody tr:first td:eq(1)').html();
+        //alert(tmpid2);
+        if (tmpid2!=null){
+            //alert(tmpid2);
+            order.removeQuoteItem(tmpid2);
+            selectedProduct = new Array();            
+            //            order.loadArea(['items', 'shipping_method', 'totals'], true,{remove_item:tmpid2, from:'quote',reset_shipping: true});            
+            setTimeout('xUpdate(true);jQuery(".wrapper").fadeIn("slow");',3000);
+        }else{
+
+            setTimeout('rmTmp2()',500);
+        }        
+    }
+    function xUpdate(offline){
+       
+        // add 1==0 to fix "custome price not include tax"
+        if ((offline || !isOnline()) && 1 == 0){
+            // check custom price
+            for(i in selectedProduct) {  
+                if(selectedProduct[i] && selectedProduct[i].id) {    
+                    var pid = jQuery('tr#order_item_'+selectedProduct[i].id+' td:eq(1)').html();
+                    if (jQuery('#item_use_custom_price_'+pid).val() == 'on'){                        
+                        selectedProduct[i].price = currencyToNumber(jQuery('#item_custom_price_'+pid).val());
+                    } else {
+                        selectedProduct[i].price = currencyToNumber(jQuery('tr#order_item_'+selectedProduct[i].id+' td.price:eq(1)').val());
+                    }
+                    selectedProduct[i].subtotal = selectedProduct[i].price * selectedProduct[i].qty * (100+Number(selectedProduct[i].tax))/100;
+                    selectedProduct[i].subtotalFormatted = formatCurrency(selectedProduct[i].subtotal,priceFormat);                    
+                    selectedProduct[i].priceFormatted = formatCurrency(selectedProduct[i].price,priceFormat);                    
+                    jQuery('tr#order_item_'+selectedProduct[i].id+' td.price.subtotal').html(selectedProduct[i].subtotalFormatted);                    
+                }
+            }                
+                    
+        var response = JSON.parse($.jStorage.get("response"));
+        var pm = jQuery('.payment-methods').has('label[for=p_method_free]');
+        if (pm && pm.length>0){
+            //if (response && response.length>0){
+            order.loadingAreas= ["billing_method","totals"];
+        }else{
+            order.loadingAreas= ["totals"];
+        }                
+        order.loadAreaResponseHandler(response);
+        order.loadingAreas = ["items", "shipping_method", "billing_method", "totals", "giftmessage", "message"];
+        // check if missing tax line
+        if (jQuery('div#order-totals td:contains("Tax")').length==0){
+            var taxline = jQuery('div#order-totals tr:contains("Subtotal")').html().replace("Subtotal","Tax");
+                    
+            jQuery('div#order-totals tr:contains("Subtotal")').after('<tr>'+taxline+'</tr>');                        
+        }
+            
+        //subtotal
+        orderTotal = 0;
+        for(i in selectedProduct) {                
+            if(selectedProduct[i] && selectedProduct[i].id) {                
+                orderTotal = parseFloat(orderTotal) +  selectedProduct[i].price * selectedProduct[i].qty;      
+            }
+        }
+        jQuery('div#order-totals tr:contains("Subtotal")').find('span.price').html(formatCurrency(orderTotal,priceFormat));
+        //tax
+        taxTotal = 0;
+        for(i in selectedProduct) {                
+            if(selectedProduct[i] && selectedProduct[i].id) {                
+                taxTotal = parseFloat(taxTotal) 
+                    +  selectedProduct[i].price*selectedProduct[i].tax/100 * selectedProduct[i].qty;      
+            }
+        }
+        jQuery('div#order-totals tr:contains("Tax")').find('span.price').html(formatCurrency(taxTotal,priceFormat));
+
+        // grandtotal
+        grandTotal = 0;
+        for(i in selectedProduct) {                
+            if(selectedProduct[i] && selectedProduct[i].id) {  
+                var subt = parseFloat(selectedProduct[i].price*selectedProduct[i].qty);
+                tax = parseFloat(selectedProduct[i].tax);
+                if (isNaN(tax))
+                    tax = 0;
+                grandTotal = parseFloat(grandTotal) 
+                    +  subt + subt*tax/100;      
+            }
+        }
+        jQuery('div#order-totals tr:contains("<?php echo Mage::helper('sales')->__('Grand Total') ?>")').find('span.price').html(formatCurrency(grandTotal,priceFormat));
+        // balance balance-content
+        grandTotal = 0;
+        for(i in selectedProduct) {                
+            if(selectedProduct[i] && selectedProduct[i].id) {  
+                var subt = parseFloat(selectedProduct[i].price*selectedProduct[i].qty);
+                grandTotal = parseFloat(grandTotal) 
+                    +  subt*(100+parseFloat(selectedProduct[i].tax))/100;      
+            }
+        }
+        var cashin = parseFloat(jQuery('input#cash-in').val());
+        if (isNaN(cashin))
+            cashin = 0;
+        jQuery('td#balance-content').find('span.price').html(formatCurrency(cashin-grandTotal,priceFormat));  
+                    
+        /*                    
+                    
+            jQuery('div#order-totals span.price').each(function(index) {                
+                if (index==0){
+                    // subtotal
+                    orderTotal = 0;
+                    for(i in selectedProduct) {                
+                        if(selectedProduct[i] && selectedProduct[i].id) {                
+                            orderTotal = parseFloat(orderTotal) +  selectedProduct[i].price * selectedProduct[i].qty;      
+                        }
+                    }
+                    jQuery(this).html(formatCurrency(orderTotal,priceFormat));
+                    
+                }
+                if (index==1){
+                    // tax
+                    taxTotal = 0;
+                    for(i in selectedProduct) {                
+                        if(selectedProduct[i] && selectedProduct[i].id) {                
+                            taxTotal = parseFloat(taxTotal) 
+                                +  selectedProduct[i].price*selectedProduct[i].tax/100 * selectedProduct[i].qty;      
+                        }
+                    }
+                    jQuery(this).html(formatCurrency(taxTotal,priceFormat));
+                    
+                }  
+                if (index==2){
+                    // grandtotal
+                    grandTotal = 0;
+                    for(i in selectedProduct) {                
+                        if(selectedProduct[i] && selectedProduct[i].id) {  
+                            var subt = parseFloat(selectedProduct[i].price*selectedProduct[i].qty);
+                            tax = parseFloat(selectedProduct[i].tax);
+                            if (isNaN(tax))
+                                tax = 0;
+                            grandTotal = parseFloat(grandTotal) 
+                                +  subt + subt*tax/100;      
+                        }
+                    }
+                    jQuery(this).html(formatCurrency(grandTotal,priceFormat));
+                    
+                }   
+                if (index==3){
+                    // balance
+                    grandTotal = 0;
+                    for(i in selectedProduct) {                
+                        if(selectedProduct[i] && selectedProduct[i].id) {  
+                            var subt = parseFloat(selectedProduct[i].price*selectedProduct[i].qty);
+                            grandTotal = parseFloat(grandTotal) 
+                                +  subt*(100+parseFloat(selectedProduct[i].tax))/100;      
+                        }
+                    }
+                    var cashin = parseFloat(jQuery('input#cash-in').val());
+                    if (isNaN(cashin))
+                        cashin = 0;
+                    jQuery(this).html(formatCurrency(cashin-grandTotal,priceFormat));
+                    
+                }                 
+            });
+         */
+        order.orderItemChanged = false;  
+    }else{
+        order.itemsUpdate();
+    }
+    updateTotal();
+}
+function initSelectCust(allCustomers){        
+    jQuery(function() {                            
+        jQuery( "#customer_search_offline" ).autocomplete({
+            minLength: <?php echo Mage::getStoreConfig('xpos/advanced/search_min_char') ?>,
+            source: allCustomers,
+              
+            focus: function( event, ui ) {
+                //                        $( "#project" ).val( ui.item.label );
+                return false;
+            },
+            select: function( event, ui ) {
+                getCustomerSelectionId($(ui.item.id));
+                return false;
+            }
+        }).data( "autocomplete" )._renderItem = function( ul, item ) {
+            return jQuery( "<li id='"+item.id+"' name='"+item.name+"' telephone='"+item.telephone+"' email='"+item.email+"' type='"+item.type+"'></li>" )
+            .data( "item.autocomplete", item )
+            .append( "<a><strong>" + item.name + "</strong>"
+                +"<br>" +item.telephone+" / "+item.email+"<br>" + item.desc + "</a>" )
+            .appendTo( ul );
+        };
+    });     
+}       
+function requestCust(allCustomers, dfd, page, limit){
+    jQuery.ajax({
+        url: '<?php echo $this->getUrl('adminhtml/xPos/customerLoad') ?>',
+        dataType: 'json',
+        data: {
+            limit: limit,
+            page: page
+        },
+        success: function(data) {
+
+            jQuery.each(data, function(key, cust) {
+                tmp = {                        
+                    id: cust.id,
+                    //label: cust.name,
+                    label: cust.name+' '+cust.telephone+' '+cust.email,
+                    name: cust.name,
+                    desc: (cust.description==null?"":cust.description),
+                    email: cust.email,
+                    telephone: (cust.telephone==null?"":cust.telephone),
+                    type: cust.type
+                };
+
+                allCustomers.push(tmp);
+            });
+
+            if (data.length<limit){                    
+                dfd.resolve();
+            }else{
+                requestCust(allCustomers, dfd, ++page, limit);                    
+            }
+
+        }
+    });     
+}
+function storeCust(){
+    // Check if "key" exists in the storage
+    var allCustomers = $.jStorage.get("customers");
+    if(!allCustomers){
+        // if not - load the data from the server
+        //jQuery('#loading-mask').show();
+        // if not - load the data from the server
+        allCustomers= []; 
+        var custPerReq = <?php echo Mage::getStoreConfig('xpos/advanced/cust_per_request') ?>;  
+          
+        // create a deferred object
+        var dfd = jQuery.Deferred();
+        // add handlers to be called when dfd is resolved
+        dfd
+        // we can chain done methods, too
+        .done(function(n) {
+            // and save  it
+            $.jStorage.set("customers",allCustomers);  
+            initSelectCust(allCustomers);
+            checkInitComplete();
+        });      
+            
+        requestCust(allCustomers, dfd,1,custPerReq);
+    }else{
+        //            alert('customers loaded from local storage');
+        initSelectCust(allCustomers);
+        checkInitComplete();
+    }
+      
+}
+/*
+    function requestProd(allProducts, dfd, page, limit){
+        jQuery.ajax({
+<!--            url: '--><?php //echo $this->getUrl('adminhtml/xPos/productLoad') ?><!--',-->
+            dataType: 'json',
+            data: {
+                limit: limit,
+                page: page
+            },
+            success: function(data) {
+
+                jQuery.each(data, function(key, prod) {
+                    tmp = {                        
+                        id: prod.id,
+                        label: prod.name,
+                        desc: prod.description,
+                        sku: prod.sku,
+                        price: prod.price,
+                        tax: prod.tax
+                    };
+
+                    allProducts.push(tmp);
+                });
+
+                if (data.length<limit){                    
+                    dfd.resolve();
+                }else{
+                    requestProd(allProducts, dfd, ++page, limit);                    
+                }
+
+            }
+        });     
+    }
+ */
+function requestProd(allProducts, dfd, page, limit){
+    jQuery.ajax({
+        url: '<?php echo $this->getUrl('adminhtml/xPos/productLoad') ?>',
+        dataType: 'json',
+        data: {
+            limit: limit,
+            page: page
+        },
+        success: function(data) {
+
+            jQuery.each(data, function(key, prod) {
+                var tname = ""+prod.name;
+                //tname = tname.toUpperCase();
+                tmp = {                        
+                    id: prod.id,
+                    label: prod.name+ " " +prod.sku + " 00000"+prod.id + " " + prod.barcode ,
+                    desc: prod.description,
+                    barcode : prod.barcode,
+                    sku: prod.sku,
+                    price: prod.price,
+                    tax: prod.tax,
+                    name: tname
+                };
+                //_(catalog.add(tmp));
+                /*
+                    var request = catalog.add(tmp);
+                    request.onsuccess = function(event){
+                        //alert(request.result);
+                    };
+                    request.onerror = function(e){
+                        alert(e);
+                    };     
+                 */
+                allProducts.push(tmp);
+//                alert(tmp.id);
+            });
+            if (data.length<limit){                    
+                dfd.resolve();
+            }else{
+                requestProd(allProducts, dfd, ++page, limit);                    
+            }
+
+        }
+    });     
+}   
+function initCount(){
+    dateString = $.jStorage.get('timestamp');
+    jQuery('#defaultCountdown').countdown({
+        until: new Date(dateString),
+        description: "until next data loading",
+        onExpiry: function(){
+            xpos_need_confirm_close = false;
+            $.jStorage.flush();
+            window.location.reload();
+        }
+    });        
+}
+function storeProd(){
+
+    // Check if "key" exists in the storage
+    var allProducts = $.jStorage.get("products");
+
+
+    if(!allProducts){
+
+        jQuery('#loading-mask').show();
+        // if not - load the data from the server
+        allProducts= [];
+
+        var productPerReq = <?php echo Mage::getStoreConfig('xpos/advanced/prod_per_request') ?>;  
+        // create a deferred object
+        var dfd = jQuery.Deferred();
+
+        // add handlers to be called when dfd is resolved
+        dfd.done(function(n) {
+            // and save  it
+            $.jStorage.set("products",allProducts);
+
+            setExpiry();
+            $.jStorage.set("timestamp", new Date().getTime()+1000*<?php echo Mage::getStoreConfig('xpos/advanced/data_reload_interval') ?>);
+            initSelectProd(allProducts);
+            checkInitComplete();
+        });
+
+
+        requestProd(allProducts, dfd,1,productPerReq);            
+        /*
+            jQuery.indexedDB("posdb01").transaction("catalog").then(function(){
+                var catalog = jQuery.indexedDB("posdb01").objectStore("catalog");
+                
+                alert('init indexeddb');
+                catalog.clear();
+                requestProd(allProducts, dfd,1,productPerReq);
+                requestProd(allProducts, dfd,1,productPerReq,catalog);            
+                
+                //emptyTable("catalog");
+
+            });
+            jQuery.indexedDB("posdb01").objectStore("catalog");            
+         */
+
+    }else{
+             
+        //            alert('loaded products from local storage');
+        initSelectProd(allProducts);
+        checkInitComplete();
+    }
+      
+}
+
+function initSelectProd(allProducts){        
+    jQuery(function() {
+        jQuery( "#productSearch" ).autocomplete({
+            autoFocus: true,
+            minLength: <?php echo Mage::getStoreConfig('xpos/advanced/search_min_char') ?>,
+            source: allProducts,
+            focus: function( event, ui ) {
+                if (jQuery("ul.ui-autocomplete li").length == 1)
+                    jQuery("ul.ui-autocomplete li a").click();
+                //                        $( "#project" ).val( ui.item.label );
+                return false;
+            },
+            /*                
+                search: function(event, ui) {
+                    var data = findFromDB('catalog','name',jQuery('#productSearch').val());
+                    return false;
+                },
+             */                
+            select: function( event, ui ) {
+                getSelectionIdOffline($(ui.item.id));
+                return false;
+            }
+        }).data( "autocomplete" )._renderItem = function( ul, item ) {
+            return jQuery( "<li id='"+item.id+"' name='"+item.name+"' sku='"+item.sku+"' price='"+item.price+"' tax='"+item.tax+"'></li>" )
+            .data( "item.autocomplete", item )
+            .append( "<a><strong>" + item.name + "</strong><br>" + item.desc + "</a>" )
+            .appendTo( ul );
+        };
+    });     
+    // init form
+<?php //if (!$this->getRequest()->getParam('order_id')):    ?>
+    storeForm();
+<?php //else:    ?>
+    //checkInitComplete();
+<?php //endif;    ?>
+}
+ 
+
+</script>
+
+<!--trungtq ends-->        
+
+<style>
+    .wrapper{
+        display: none;
+    }
+</style>
+
+<?php echo $this->helper('core/js')->getTranslatorScript() ?>
+<?php echo $this->getChildHtml('calendar'); ?>
+<?php echo $this->getChildHtml('optional_zip_countries'); ?>

@@ -1,0 +1,25 @@
+<?php if ($this->getInfo()->getAdditionalData()) { ?>
+
+<?php if ($this->getEbayPaymentMethod()) { ?>
+<?php echo $this->getEbayPaymentMethod() ?>{{pdf_row_separator}}
+<?php } ?>
+
+<?php if ($this->getEbayOrderId()) { ?>
+<?php echo Mage::helper('M2ePro')->__('eBay Order ID') . ': ' . $this->getEbayOrderId() ?>{{pdf_row_separator}}
+<?php } ?>
+
+<?php if ($this->getEbayFinalValueFee()) { ?>
+<?php echo Mage::helper('M2ePro')->__('eBay Final Fee') . ': ' . $this->getEbayFinalValueFee() ?>{{pdf_row_separator}}
+<?php } ?>
+
+<?php if (count($this->getExternalTransactions())) { ?>
+<?php echo Mage::helper('M2ePro')->__('PayPal Transaction') ?>: {{pdf_row_separator}}
+
+<?php foreach ($this->getExternalTransactions() as $key => $externalTransaction) { ?>
+<?php echo Mage::helper('M2ePro')->__('Transaction ID') . ': ' . $externalTransaction['ebay_id']; ?>{{pdf_row_separator}}
+<?php echo Mage::helper('M2ePro')->__('Transaction Date') . ': ' . Mage::helper('core')->formatDate($externalTransaction['time'], 'medium', true); ?>{{pdf_row_separator}}
+<?php } ?>
+
+<?php } ?>
+
+<?php } ?>

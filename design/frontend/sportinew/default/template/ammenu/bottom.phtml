@@ -1,0 +1,10 @@
+<?php
+$menuItems = $this->getBottomMenu();
+if (count($menuItems)) { ?>
+<div class="b-flexible-menu-bottom-container">
+<?php 
+foreach($menuItems as $menuItem) {
+	if (isset($menuItem->closeTag)) { ?></ul><?php  }
+	if (isset($menuItem->openTag)) { ?><ul><?php  } ?>		
+		<li class="<?php echo implode(" ", $menuItem->classes) ?>"><?php echo $menuItem->label ?></li>
+<?php } ?></ul></div><?php } ?>

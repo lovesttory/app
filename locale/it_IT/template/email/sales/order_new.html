@@ -1,0 +1,128 @@
+﻿<!-- InstanceBegin template="/Templates/sportinew_guest_mail_std_ita.dwt" codeOutsideHTMLIsLocked="false" --><!-- InstanceBeginEditable name="subject" -->
+<!--@subject {{var store.getFrontendName()}}: Conferma di ricezione nuovo ordine numero #{{var order.increment_id}} @-->
+<!--@vars
+{"store url=\"\"":"Store Url",
+"skin url=\"images/logo_email.gif\" _area='frontend'":"Email Logo Image",
+"htmlescape var=$order.getCustomerName()":"Customer Name",
+"var store.getFrontendName()":"Store Name",
+"store url=\"customer/account/\"":"Customer Account Url",
+"var order.increment_id":"Order Id",
+"var order.getCreatedAtFormated('long')":"Order Created At (datetime)",
+"var order.getBillingAddress().format('html')":"Billing Address",
+"var payment_html":"Payment Details",
+"var order.getShippingAddress().format('html')":"Shipping Address",
+"var order.getShippingDescription()":"Shipping Description",
+"layout handle=\"sales_email_order_items\" order=$order":"Order Items Grid",
+"var order.getEmailCustomerNote()":"Email Order Note"}
+@-->
+<!-- InstanceEndEditable -->
+<!--@styles
+body, td {color:#2f2f2f;font:11px Verdana, Arial, Helvetica, sans-serif;line-height: normal;}
+.orange {color: #e85500;font-weight:bold;}
+a {color: #545454;font-weight:bold;}
+.bold {font-weight: bold;}
+@-->
+
+<body>
+<div style="font:11px/1.35em Verdana, Arial, Helvetica, sans-serif;">
+  <table cellspacing="0" cellpadding="0" border="0" width="98%" style="margin-top:10px; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; margin-bottom:10px;">
+    <tr>
+      <td align="center" valign="top"><!-- [ header starts here] -->
+        <table cellspacing="0" cellpadding="0" border="0" width="650">
+          <tr>
+            <td valign="top"><a href="{{store url=''}}"><img src="{{skin url='images/logo_email_feg.gif' _area='frontend'}}" alt="Fit &amp; Gym"  style="margin-bottom:10px;" border="0"/></a></td>
+          </tr>
+        </table>
+        <!-- [ middle starts here] -->
+        <table cellspacing="0" cellpadding="0" border="0" width="650">
+          <tr>
+            <td valign="top"><!-- InstanceBeginEditable name="content" -->
+              <p><strong>Gentile {{var order.getCustomerName()}}</strong>,</p>
+              <p> Con la presente siamo lieti di confermare l&rsquo;avvenuta ricezione del suo nuovo ordine numero #{{var order.increment_id}}, effettuato in data {{var order.getCreatedAtFormated('long')}} su {{var order.getStoreGroupName()}}.</p>
+              <p>La ringraziamo per l&rsquo;acquisto e le ricordiamo che, in caso di pagamento anticipato (Paypal, carta di credito, bonifico, bollettino, vaglia postale, ricarica Postepay) la spedizione sar&agrave; effettuata solo dopo aver ricevuto il saldo dell&rsquo;ordine.<br />
+              Pertanto, qualora avesse selezionato una delle modalit&agrave; sopra indicate e non avesse ancora effettuato il pagamento, la invitiamo a procedere per avviare la procedura di spedizione.</p>
+              <p>L&rsquo;avvenuta ricezione del pagamento le sar&agrave; notificata via e-mail non appena disponibile; seguir&agrave; la conferma di avvenuta spedizione dell&rsquo;ordine con i dettagli per la consegna. Per maggiori dettagli sulle modalit&agrave; di trasporto, si consiglia di consultare attentamente la sezione &ldquo;<a href="{{store url='pagamenti/'}}">Pagamenti</a>” del nostro negozio on-line.</p>
+              <p>La invitiamo a controllare che i dati inseriti nel seguente riepilogo dell&rsquo;ordine sia corretti: in caso di errori e/o per variazioni la invitiamo a contattare il nostro <span class="orange">Servizio Clienti</span> per le correzioni necessarie.</p>
+              <h3 style="border-bottom:2px solid #eee; font-size:1.05em; padding-bottom:1px; ">Riepilogo dell&rsquo;ordine  numero #{{var order.increment_id}} <small>(effettuato in data {{var order.getCreatedAtFormated('long')}})</small></h3>
+              <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                <thead>
+                  <tr>
+                    <th align="left" width="48.5%" bgcolor="#d9e5ee" style="padding:5px 9px 6px 9px; border:1px solid #bebcb7; border-bottom:none; line-height:1em;">Nominativo di Fatturazione:</th>
+                    <th width="3%"></th>
+                    <th align="left" width="48.5%" bgcolor="#d9e5ee" style="padding:5px 9px 6px 9px; border:1px solid #bebcb7; border-bottom:none; line-height:1em;">Modalit&agrave; di Pagamento:</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td valign="top" style="padding:7px 9px 9px 9px; border:1px solid #bebcb7; border-top:0; background:#f8f7f5;"> {{var order.getBillingAddress().format('html')}} </td>
+                    <td>&nbsp;</td>
+                    <td valign="top" style="padding:7px 9px 9px 9px; border:1px solid #bebcb7; border-top:0; background:#f8f7f5;"> {{var payment_html}}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <br/>
+              {{depend order.getIsNotVirtual()}}
+              <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                <thead>
+                  <tr>
+                    <th align="left" width="48.5%" bgcolor="#d9e5ee" style="padding:5px 9px 6px 9px; border:1px solid #bebcb7; border-bottom:none; line-height:1em;">Indirizzo di Spedizione:</th>
+                    <th width="3%"></th>
+                    <th align="left" width="48.5%" bgcolor="#d9e5ee" style="padding:5px 9px 6px 9px; border:1px solid #bebcb7; border-bottom:none; line-height:1em;">Modalit&agrave; di Spedizione:</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td valign="top" style="padding:7px 9px 9px 9px; border:1px solid #bebcb7; border-top:0; background:#f8f7f5;"> {{var order.getShippingAddress().format('html')}}
+                      &nbsp; </td>
+                    <td>&nbsp;</td>
+                    <td valign="top" style="padding:7px 9px 9px 9px; border:1px solid #bebcb7; border-top:0; background:#f8f7f5;"> {{var order.getShippingDescription()}}
+                      &nbsp; </td>
+                  </tr>
+                </tbody>
+              </table>
+              <br/>
+              {{/depend}}
+              {{layout handle='sales_email_order_items' order=$order}}
+              {{var items_html}} <br/>
+              {{var order.getEmailCustomerNote()}}<br />
+               <hr/>
+              <br/>
+              Nel caso si sia scelto di pagare con <span class="orange">Consel - Rate in Rete</span>  occorre inoltrare la richiesta da <a href="{{store url=''}}richiesta-finanziamento.html?orderID={{var order.increment_id}}&totalDue={{var order.getTotalDue()}}&firstName={{var order.getCustomerFirstNameTT()}}&lastName={{var order.getCustomerLastNameTT()}}">questa pagina</a><br/>
+              <br/>
+            <!-- InstanceEndEditable -->
+            </td>
+          </tr>
+          <tr><td>
+            <hr/>
+          	<p>Le ricordiamo che, registrando un proprio <span class="bold">ACCOUNT PERSONALE</span> su <span class="orange">{{var order.getStoreGroupName()}}</span>, in qualsiasi momento sarà possibile consultare i dettagli dell’ordine ed il relativo stato di avanzamento, oltre che sfruttare una serie di funzioni messe a disposizione per tutti i nostri clienti:</p>
+          	<ul>
+          	  <li>Concludere un acquisto più velocemente senza inserire i propri dati anagrafici per ogni ordine</li>
+          	  <li> Inserire indirizzi alternativi per richiedere consegne multiple </li>
+          	  <li>Consultare un registro contenente tutti gli acquisti effettuati nel corso del tempo</li>
+          	  <li> Riordinare i prodotti direttamente dagli ordini effettuati precedentemente</li>
+          	  <li> Stampare documenti di spedizione, fatture e/o note credito              </li>
+          	</ul>
+          	<p>Per registrarsi servono solo pochi secondi: occorre cliccare su <a href="{{store url='customer/account/'}}">Account</a> nella parte alta di ogni pagina del nostro sito web e poi inserire il proprio indirizzo e-mail, una password personale ed i dati anagrafici.             </p>
+          	<p> Per qualsiasi ulteriore informazione e/o esigenza, il nostro <span class="orange">Servizio Clienti</span> sarà a sua completa disposizione tutti i giorni, dal lunedì al sabato, nelle seguenti fasce orario: 9.30/13.00 - 15.00/19.30: </p>
+             <ul>
+             <li><span class="bold">Telefono:</span> +39 0825 892327</li>
+             <li><span class="bold">Fax:</span> +39 0825 894849</li>
+             <li><span class="bold">E-mail:</span> assistenza@fitegym.it</li>
+             <li><span class="bold">Skype:</span> fitegym<p><a href="skype:fitegym?call"><img src="http://download.skype.com/share/skypebuttons/buttons/call_green_transparent_70x23.png" style="border: none;" width="70" height="23" alt="Skype Me™!" /></a> <a href="skype:fitegym?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_blue_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chatta con me" /></a>
+<br /><a href="http://www.skype.com/go/download">Scarica Skype</a> e chiamaci gratis.</p></li>
+</ul>           
+<p>Nell’augurarci che l’acquisto effettuato ed i servizi offerti dal nostro negozio siano in grado di soddisfare al meglio le sue aspettative, la ringraziamo nuovamente e cogliamo l’occasione per porgere nostri Cordiali Saluti.</p>
+             <p> Servizio Clienti,<br />
+             <span class="orange">Fit &amp; Gym: The Wellness Provider</span></p></td></tr>
+           <tr><td>
+            <hr/>
+            Fit & Gym® S.r.l. Via San Tommaso 6/C, 83031 Ariano Irpino (Av)<br />
+			Tel: 0825-892327  |  Fax: 0825-894849<br />
+			P. IVA: 0 2 5 9 2 9 8 0 6 4 9<br />
+          </td></tr>
+      </table></td>
+    </tr>
+  </table>
+</div>
+</body><!-- InstanceEnd -->

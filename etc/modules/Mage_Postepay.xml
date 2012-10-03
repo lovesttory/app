@@ -1,0 +1,12 @@
+<config>
+    <modules>
+        <Mage_Postepay>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <Mage_Payment />
+            </depends>
+            <version>0.1</version>
+        </Mage_Postepay>
+    </modules>
+</config>

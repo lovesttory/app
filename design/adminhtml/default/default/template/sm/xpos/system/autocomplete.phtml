@@ -1,0 +1,15 @@
+<ul>
+    <?php foreach ($items as $item): ?>
+        <li<?php foreach ($item as $k => $v): ?> <?php echo $k ?>="<?php echo $v ?>"<?php endforeach; ?>>
+            <div style="float:right; color:red; font-weight:bold;">[<?php echo $item['type'] ?>]</div>
+            <strong><?php echo $this->htmlEscape($item['name']) ?></strong><br/>
+            <?php if ($item['type'] == "Customer"): ?>
+                <span class="informal"><?php echo $this->htmlEscape($item['telephone']) ?> / <?php echo $this->htmlEscape($item['email']) ?></span>
+            <?php endif; ?>
+            <span class="informal"><?php echo $this->htmlEscape($item['description']) ?></span>
+            <?php if (sizeof($items) == 1): ?>
+                <script type="text/javascript">alert($$('li#<?php echo $item['id'] ?>').first());</script>
+            <?php endif; ?>
+        </li>
+    <?php endforeach ?>
+</ul>

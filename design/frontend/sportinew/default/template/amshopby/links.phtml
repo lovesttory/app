@@ -1,0 +1,12 @@
+<?php $links = $this->getLinks() ?>
+<?php if (count($links)): ?>
+<?php foreach ($links as $link): ?>
+<div class="amshopby-link">
+<?php //non deve essere un filtro 
+/* <a href="<?php echo $link['url']?>">
+<img title="<?php echo $this->htmlEscape($link['title'])?>" alt="<?php echo $this->htmlEscape($link['title'])?>" src="<?php echo $link['img']?>">
+</a> */ ?>
+<img title="<?php echo $this->htmlEscape($link['title'])?>" alt="<?php echo $this->htmlEscape($link['title'])?>" src="<?php echo $link['img']?>">
+</div>
+<?php endforeach ?>
+<?php endif; ?>

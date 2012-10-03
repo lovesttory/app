@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config>
+    <global>
+        <models>
+            <bankprepayment>
+                <class>Mage_BankPrePayment_Model</class>
+            </bankprepayment>
+        </models>
+
+        <resources>
+            <bankprepayment_setup>
+                <setup>
+                    <module>Mage_BankPrePayment</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </bankprepayment_setup>
+            <bankprepayment_write>
+                <use>core_write</use>
+            </bankprepayment_write>
+            <bankprepayment_read>
+                <use>core_read</use>
+            </bankprepayment_read>
+        </resources>
+    </global>
+
+    <default>
+        <payment>
+            <bankprepayment>
+                <active>0</active>
+                <model>bankprepayment/bankPrePayment</model>
+                <order_status>1</order_status>
+                <title>Bank Prepayment</title>
+                <allowspecific>0</allowspecific>
+            </bankprepayment>
+         </payment>
+    </default>
+
+    <adminhtml>       
+        <translate>
+            <modules>
+                <Mage_BankPrePayment>
+                    <files>
+                        <default>Mage_BankPrePayment.csv</default>
+                    </files>
+                </Mage_BankPrePayment>
+            </modules>
+        </translate>
+    </adminhtml>
+ 
+    <frontend>       
+        <translate>
+            <modules>
+                <Mage_BankPrePayment>
+                    <files>
+                        <default>Mage_BankPrePayment.csv</default>
+                    </files>
+                </Mage_BankPrePayment>
+            </modules>
+        </translate>        
+    </frontend> 
+</config>

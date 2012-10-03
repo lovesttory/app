@@ -1,0 +1,12 @@
+<config>
+    <modules>
+        <Mage_Consel>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <Mage_Payment />
+            </depends>
+            <version>0.1</version>
+        </Mage_Consel>
+    </modules>
+</config>

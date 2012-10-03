@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config>
+    <global>
+        <models>
+            <postepay>
+                <class>Mage_Postepay_Model</class>
+            </postepay>
+        </models>
+
+        <resources>
+            <postepay_setup>
+                <setup>
+                    <module>Mage_Postepay</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </postepay_setup>
+            <postepay_write>
+                <use>core_write</use>
+            </postepay_write>
+            <postepay_read>
+                <use>core_read</use>
+            </postepay_read>
+        </resources>
+    </global>
+
+    <default>
+        <payment>
+            <postepay>
+                <active>0</active>
+                <model>postepay/Postepay</model>
+                <order_status>1</order_status>
+                <title>Ricarica Postepay</title>
+                <allowspecific>0</allowspecific>
+            </postepay>
+         </payment>
+    </default>
+
+    <adminhtml>       
+        <translate>
+            <modules>
+                <Mage_Postepay>
+                    <files>
+                        <default>Mage_Postepay.csv</default>
+                    </files>
+                </Mage_Postepay>
+            </modules>
+        </translate>
+    </adminhtml>
+ 
+    <frontend>       
+        <translate>
+            <modules>
+                <Mage_Postepay>
+                    <files>
+                        <default>Mage_Postepay.csv</default>
+                    </files>
+                </Mage_Postepay>
+            </modules>
+        </translate>        
+    </frontend> 
+</config>

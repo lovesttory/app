@@ -1,0 +1,17 @@
+<?php
+    $store = Mage::app()->getStore();
+    $cms_pages = Mage::getModel('cms/page')->getCollection();
+    $cms_pages->addStoreFilter($store);
+    $cms_pages->load();
+
+    echo '<ul>' . "\r\n";
+    foreach ($cms_pages as $_page) {
+            $data = $_page->getData();
+
+            if($data['identifier']=='no-route') 
+                continue;
+
+        echo '<li><a href="'.Mage::getURL().".$data['identifier'].'" title="'.$data['title'].'" target="_self">'.$data['title'].</a></li>'."\r\n";
+    }
+    echo '</ul>' . "\r\n";
+?>

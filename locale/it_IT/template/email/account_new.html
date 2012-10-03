@@ -1,0 +1,101 @@
+<!--@subject Benvenuto {{var customer.name}}! @-->
+<!--@vars
+{"store url=\"\"":"Store Url",
+"skin url=\"images/logo_email.gif\" _area='frontend'":"Email Logo Image",
+"htmlescape var=$customer.name":"Customer Name",
+"store url=\"customer/account/\"":"Customer Account Url",
+"var customer.email":"Customer Email",
+"htmlescape var=$customer.password":"Customer Password"}
+@-->
+
+Benvenuto {{htmlescape var=$customer.name}}!
+---
+Questa email e' stata inviata in modalita' HTML. Nel caso non fosse visualizzata correttamente il vostro lettore potrebbe non essere compatibile.
+--BOUNDARY_LIMIT_TT--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/mail_std_ita_feg.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><!-- InstanceBeginEditable name="subject" -->
+Benvenuto {{htmlescape var=$customer.name}}!
+<!-- InstanceEndEditable --></title>
+<style type="text/css">
+body, td {color:#2f2f2f;font:11px Verdana, Arial, Helvetica, sans-serif;line-height: normal;}
+.orange {color: #e85500;font-weight:bold;}
+a {color: #545454;font-weight:bold;}
+.bold {	font-weight: bold;}
+</style>
+</head>
+<body>
+<div style="font:11px/1.35em Verdana, Arial, Helvetica, sans-serif;">
+  <table cellspacing="0" cellpadding="0" border="0" width="98%" style="margin-top:10px; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; margin-bottom:10px;">
+    <tr>
+      <td align="center" valign="top"><!-- [ header starts here] -->
+        <table cellspacing="0" cellpadding="0" border="0" width="650">
+          <tr>
+            <td valign="top">
+				<a href="{{store url=""}}"><img src="{{skin url="images/logo_email_feg.gif" _area='frontend'}}" alt="{{var store.getFrontendName()}}"  style="margin-bottom:10px;" border="0"/></a></td>
+          </tr>
+        </table>
+        <!-- [ middle starts here] -->
+        <table cellspacing="0" cellpadding="0" border="0" width="650">
+          <tr>
+            <td valign="top"><!-- InstanceBeginEditable name="content" -->
+              <p><strong>Gentile {{htmlescape var=$customer.name}}</strong>,</p>
+              <p>con la presente siamo lieti di confermare l’avvenuta registrazione del suo account sul nostro sito.</p>
+              <p> La ringraziamo e le diamo il benvenuto sul sito web <span class="orange">Fit &amp; Gym: The Wellness Provider</span>.              </p>
+              <table cellspacing="0" cellpadding="0" border="0" width="50%">
+                <thead>
+                  <tr>
+                    <th align="left" bgcolor="#d9e5ee" style="padding:5px 9px 6px 9px; border:1px solid #bebcb7; border-bottom:none; line-height:1em;">Dati di accesso per il suo account</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td valign="top" style="padding:7px 9px 9px 9px; border:1px solid #bebcb7; border-top:0; background:#f8f7f5;"><span class="bold">E-mail:</span> {{var customer.email}}</td>
+                  </tr>
+                  <tr>
+                    <td valign="top" style="padding:7px 9px 9px 9px; border:1px solid #bebcb7; border-top:0; background:#f8f7f5;"><span class="bold">Password:</span> {{htmlescape var=$customer.password}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Dopo aver eseguito l'accesso, sarà possibile:</p>
+              <ul>
+                <li>Concludere un acquisto più velocemente senza inserire i propri dati anagrafici per ogni ordine</li>
+                <li>Controllare lo stato degli ordini</li>
+                <li>Consultare i dettagli di ogni acquisto effettuato</li>
+                <li>Modificare le informazioni relative al proprio account</li>
+                <li>Cambiare la propria password di accesso</li>
+                <li>Inserire indirizzi alternativi per richiedere consegne multiple</li>
+              </ul>
+            <!-- InstanceEndEditable -->
+            </td>
+          </tr>
+          <tr><td>
+            
+          	<p><hr/>Le ricordiamo che, effettuando l’accesso al proprio account su <span class="orange">{{var store.getFrontendName()}}</span>, in qualsiasi momento sarà possibile consultare i dettagli dell’ordine ed il relativo stato di avanzamento.<br />
+             Per effettuare l’accesso al proprio account, occorre cliccare su <a href="{{store url="customer/account/"}}">Login</a> nella parte alta di ogni pagina del nostro sito web e poi inserire l’indirizzo e-mail e la password scelti al momento della registrazione.</p>
+             <p> Per qualsiasi ulteriore informazione e/o esigenza, il nostro <span class="orange">Servizio Clienti</span> sarà a sua completa disposizione tutti i giorni, dal lunedì al sabato, nelle seguenti fasce orario: 9.30/13.00 - 15.00/19.30: </p>
+             <ul>
+             <li><span class="bold">Telefono:</span> +39 0825 892327</li>
+             <li><span class="bold">Fax:</span> +39 0825 894849</li>
+             <li><span class="bold">E-mail:</span> assistenza@fitegym.it</li>
+             <li><span class="bold">MSN:</span> fitegym@hotmail.it</li>
+             <li><span class="bold">Skype:</span> fitegym<p><a href="skype:fitegym?call"><img src="http://download.skype.com/share/skypebuttons/buttons/call_green_transparent_70x23.png" style="border: none;" width="70" height="23" alt="Skype Me™!" /></a> <a href="skype:fitegym?chat"><img src="http://download.skype.com/share/skypebuttons/buttons/chat_blue_transparent_97x23.png" style="border: none;" width="97" height="23" alt="Chatta con me" /></a>
+<br /><a href="http://www.skype.com/go/download">Scarica Skype</a> e chiamaci gratis.</p></li>
+</ul>
+        
+<p>Nell’augurarci che l’acquisto effettuato ed i servizi offerti dal nostro negozio siano in grado di soddisfare al meglio le sue aspettative, la ringraziamo nuovamente e cogliamo l’occasione per porgere nostri Cordiali Saluti.</p>
+             <p> Servizio Clienti,<br />
+              <span class="orange">Fit &amp; Gym: The Wellness Provider</span></p></td></tr>
+           <tr><td>
+            <hr/>
+            Fit & Gym® S.r.l. Via San Tommaso 6/C, 83031 Ariano Irpino (Av)<br />
+			Tel: 0825-892327  |  Fax: 0825-894849<br />
+			P. IVA: 0 2 5 9 2 9 8 0 6 4 9<br />
+          </td></tr>
+      </table></td>
+    </tr>
+  </table>
+</div>
+</body>
+<!-- InstanceEnd --></html>

@@ -1,0 +1,22 @@
+<?php
+/**
+ * SmartOSC Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * 
+ * @category   SM
+ * @package    SM_Barcode
+ * @version    2.0
+ * @author     hoadx@smartosc.com
+ * @copyright  Copyright (c) 2010-2011 SmartOSC Co. (http://www.smartosc.com)
+ */
+ ?>
+<?php $product_id = $this->getRequest()->getParam('id'); ?>
+<img src="<?php echo str_replace('index.php/', '', Mage::getUrl('media/barcode').$product_id.'.png') ?>"  alt="" />
+<script type="text/javascript">
+    window.print();
+</script>
+<?php

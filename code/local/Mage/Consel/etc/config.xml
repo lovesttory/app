@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<config>
+    <global>
+        <models>
+            <consel>
+                <class>Mage_Consel_Model</class>
+            </consel>
+        </models>
+
+        <resources>
+            <consel_setup>
+                <setup>
+                    <module>Mage_Consel</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </consel_setup>
+            <consel_write>
+                <use>core_write</use>
+            </consel_write>
+            <consel_read>
+                <use>core_read</use>
+            </consel_read>
+        </resources>
+    </global>
+
+    <default>
+        <payment>
+            <consel>
+                <active>0</active>
+                <model>consel/Consel</model>
+                <order_status>1</order_status>
+                <title>Finanziamento con Consel</title>
+                <allowspecific>0</allowspecific>
+            </consel>
+         </payment>
+    </default>
+
+    <adminhtml>       
+        <translate>
+            <modules>
+                <Mage_Consel>
+                    <files>
+                        <default>Mage_Consel.csv</default>
+                    </files>
+                </Mage_Consel>
+            </modules>
+        </translate>
+    </adminhtml>
+ 
+    <frontend>       
+        <translate>
+            <modules>
+                <Mage_Consel>
+                    <files>
+                        <default>Mage_Consel.csv</default>
+                    </files>
+                </Mage_Consel>
+            </modules>
+        </translate>        
+    </frontend> 
+</config>

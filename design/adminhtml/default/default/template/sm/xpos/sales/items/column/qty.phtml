@@ -1,0 +1,5 @@
+<?php if ($_item = $this->getItem()): ?>
+    <?php if ((float) $_item->getQtyShipped()): ?>
+        <strong><?php echo $_item->getQtyShipped()*1 ?></strong>
+    <?php endif; ?>
+<?php endif; ?>

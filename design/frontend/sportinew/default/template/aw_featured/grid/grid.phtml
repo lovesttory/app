@@ -1,0 +1,115 @@
+<?php
+/**
+* aheadWorks Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://ecommerce.aheadworks.com/AW-LICENSE-COMMUNITY.txt
+ *
+ * =================================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * =================================================================
+ * This package designed for Magento COMMUNITY edition
+ * aheadWorks does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * aheadWorks does not provide extension support in case of
+ * incorrect edition usage.
+ * =================================================================
+ *
+ * @category   AW
+ * @package    AW_Featured
+ * @version    3.3.0
+ * @copyright  Copyright (c) 2010-2012 aheadWorks Co. (http://www.aheadworks.com)
+ * @license    http://ecommerce.aheadworks.com/AW-LICENSE-COMMUNITY.txt
+ */
+?>
+<?php
+
+?>
+<?php if($this->canDisplay() && $this->getProductsCollection()->getSize() && !$this->getIsEmpty()) : ?>
+<?php $_helper = $this->helper('catalog/output') ?>
+<?php $_imageQsize = 170 // Maximal image width\height value, pixels ?>
+<?php $_onSaleHelper = $this->helper('awfeatured/onsale') ?>
+<?php $_abstractBlock = $this->helper('awfeatured')->getAbstractProductBlock() ?>
+<div class="awfeatured awafpgrid" id="<?php echo $this->getUniqueBlockId() ?>" style="<?php echo $this->getContainerStyleString() ?>">
+    <?php $_i = $_ulOpened = $_ulClosed = 0; ?>
+    <?php foreach($this->getProductsCollection() as $_product) : ?>
+        <?php if($_i % $this->getItemsPerRow() == 0) : ?>
+        <?php $_ulOpened++ ?>
+        <ul>
+        <!-- row begins -->
+        <?php endif ?>
+            <li style="width: <?php echo $this->getItemWidth() ?>%">
+                <!-- product item begin -->
+                <?php $_imageSrc = Mage::helper('awfeatured/images')->getProductImage($_product, $_product->getData('image_id'), $_imageQsize) ?>
+                <?php if($_imageSrc) : ?>
+                <div class="afp-thumbnail">
+                    <?php if($_onSaleHelper->isOnsale()) echo $_onSaleHelper->startOnsale($_product, $_imageQsize) ?>
+                    <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($_abstractBlock->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image">
+                        <img src="<?php echo $_imageSrc ?>" alt="<?php echo $this->stripTags($_abstractBlock->getImageLabel($_product, 'small_image'), null, true) ?>" />
+                    </a>
+                    <?php if($_onSaleHelper->isOnsale()) echo $_onSaleHelper->endOnsale() ?>
+                </div>
+                <?php endif ?>
+                <?php if($this->getShowProductName()) : ?>
+                <div class="awafptitle">
+                    <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($_product->getName(), null, true) ?>">
+                      <?php $productNameShort = $_helper->productAttribute($_product, $_product->getName() , 'name'); 
+                        if (strlen ( $productNameShort ) > 70) {
+                          $productNameShort = substr ( $productNameShort, 0, 70 );
+                          $spazioFine = strrpos ( $productNameShort, ' ' );
+                          $productNameShort = substr ( $productNameShort, 0, $spazioFine );                        
+                          $productNameLenght=strlen($productNameShort)-1;
+                          if (strrpos($productNameShort,',')==$productNameLenght ||strrpos($productNameShort,' e')==$productNameLenght-1 || strrpos($productNameShort,'.')==$productNameLenght || strrpos($productNameShort,'-')==$productNameLenght) {
+                            $productNameShort=substr($productNameShort,0,-1);
+                          }
+                          $productNameShort=$productNameShort.'...';
+                        }
+                        echo $productNameShort;
+                      ?>
+                    </a>
+                </div>
+                <?php endif ?>
+                <?php if($this->getShowDetails()) : ?>
+                <div class="afp-details">
+                    <?php echo ($_product->getData('short_description')) ?>
+                </div>
+                <?php endif ?>
+                 <?php if($this->getShowPrice()) : ?>
+                <?php echo $_abstractBlock->getPriceHtml($_product, true) ?>
+                <?php endif ?>
+                <?php if($this->getShowAddToCartButton()) : ?>
+                <div class="afp-addtocart">
+                    <?php if($_product->isSaleable()) : ?>
+                    <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button" onclick="setLocation('<?php echo $_abstractBlock->getAddToCartUrl($_product) ?>')"><div><?php echo $this->__('Add to Cart') ?></div></button>
+                    <?php else : ?>
+                    <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                    <?php endif ?>
+                    <?php if ($this->helper('wishlist')->isAllow()) : ?>
+                            <a href="<?php echo $this->helper('wishlist')->getAddUrl($_product) ?>" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a>
+                     <?php endif; ?>
+                </div>
+                <?php endif ?>
+                <!-- product item end -->
+            </li>
+        <?php if(($_i+1) % $this->getItemsPerRow() == 0) : ?>
+        <?php $_ulClosed++ ?>
+        <!-- row ends -->
+        </ul>
+        <?php endif ?>
+    <?php $_i++ ?>
+    <?php endforeach ?>
+    <?php if($_ulOpened != $_ulClosed) : ?>
+        </ul>
+    <?php endif ?>
+</div>
+<br clear="all" />
+<script type="text/javascript">
+    var afpGrid<?php echo $this->getUniqueBlockId() ?> = new afpGrid({
+        blockId: '<?php echo $this->getUniqueBlockId() ?>'
+    });
+</script>
+<?php endif ?>

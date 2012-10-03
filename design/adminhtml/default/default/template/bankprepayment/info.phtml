@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Mage
+ * @package    Mage_BankPrePayment
+ * @copyright  Copyright (c) 2008 TeleType - Oto Tortorella
+ * @copyright  Created from Mage_BankPayment
+ * @copyright  Copyright (c) 2008 Andrej Sinicyn
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+?>
+<p>
+    <?php echo $this->getMethod()->getTitle(); ?><br />
+    <div style="font-style: italic;"><?php echo $this->__('Account info'); ?></div>
+    <ul>
+        <?php if ($this->getMethod()->getAccountHolder()): ?>
+            <?php echo '<li>' . $this->__('Account holder') . ': ' . $this->getMethod()->getAccountHolder() . '</li>'; ?>
+        <?php endif; ?>
+        <?php if ($this->getMethod()->getAccountNumber()): ?>
+            <?php echo '<li>' . $this->__('Account number') . ': ' . $this->getMethod()->getAccountNumber() . '</li>'; ?>
+        <?php endif; ?>
+        <?php if ($this->getMethod()->getSortCode()): ?>
+            <?php echo '<li>' . $this->__('Sort code') . ': ' . $this->getMethod()->getSortCode() . '</li>'; ?>
+        <?php endif; ?>
+        <?php if ($this->getMethod()->getBankName()): ?>
+            <?php echo '<li>' . $this->__('Bank name') . ': ' . $this->getMethod()->getBankName() . '</li>'; ?>
+        <?php endif; ?>
+        <?php if ($this->getMethod()->getIBAN()): ?>
+            <?php echo '<li>' . $this->__('IBAN') . ': ' . $this->getMethod()->getIBAN() . '</li>'; ?>
+        <?php endif; ?>
+    </ul>
+    <?php if ($this->getMethod()->getBIC()): ?>
+        <br />
+        <div style="font-style: italic;"><?php echo $this->__('International') ?></div>
+        <ul>
+            <?php echo '<li>' . $this->__('BIC') . ': ' . $this->getMethod()->getBIC() . '</li>'; ?>
+        </ul>
+    <?php endif; ?>
+    <?php if ($this->getMethod()->getCustomText()): ?>
+        <br />
+        <?php echo $this->getMethod()->getCustomText(); ?><br />
+    <?php endif; ?>
+</p>
